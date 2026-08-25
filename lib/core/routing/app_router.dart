@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../presentation/home/home_screen.dart';
+import '../../presentation/match/match_screen.dart';
 
 abstract final class AppRoutes {
   static const String home = '/';
@@ -14,6 +15,8 @@ final class AppRouter {
     switch (settings.name) {
       case AppRoutes.home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case AppRoutes.match:
+        return MaterialPageRoute(builder: (_) => const MatchScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

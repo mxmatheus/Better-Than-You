@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/profile/player_profile.dart';
@@ -136,13 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            // Matchmaking entry hook (Phase 1E)
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Ranked Matchmaking initialized in Phase 1E'),
-                duration: Duration(seconds: 1),
-              ),
-            );
+            Navigator.of(context).pushNamed(AppRoutes.match);
           },
           child: Padding(
             padding: const EdgeInsets.all(20.0),
