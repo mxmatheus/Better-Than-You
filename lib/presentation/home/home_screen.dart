@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/auth/auth_repository.dart';
+import '../../domain/auth/auth_state.dart';
 import '../../domain/match/match_repository.dart';
 import '../../domain/profile/player_profile.dart';
 
@@ -17,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  StreamSubscription<AppAuthState>? _authSubscription;
   PlayerProfile _profile = const PlayerProfile(
     id: 'guest_001',
     username: 'CHALLENGER',
@@ -31,8 +34,23 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     if (widget.authRepository != null) {
+      final state = widget.authRepository!.currentState;
+      if (state is AuthAuthenticated) {
+        _profile = state.profile;
+      }
+      _authSubscription = widget.authRepository!.authStateChanges.listen((s) {
+        if (s is AuthAuthenticated && mounted) {
+          setState(() => _profile = s.profile);
+        }
+      });
       _loadProfile();
     }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadProfile() async {
@@ -48,7 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          padding: const EdgeInsets.only(
+            left: 20.0,
+            right: 20.0,
+            top: 16.0,
+            bottom: 96.0,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -104,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(_profile.username, style: AppTypography.titleMedium),
+              Text(_profile.displayName, style: AppTypography.titleMedium),
             ],
           ),
           Row(

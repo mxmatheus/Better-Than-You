@@ -460,6 +460,14 @@ final class SupabaseAuthRepository implements AuthRepository {
     if (message.contains('canceled') || message.contains('cancelled')) {
       return const OAuthCancelledError();
     }
+    if (message.contains('provider is not enabled') ||
+        message.contains('provider_disabled') ||
+        code == 'provider_disabled' ||
+        message.contains('unsupported provider')) {
+      return const OAuthFailedError(
+        'Google sign-in is currently not enabled on this server.',
+      );
+    }
     if (message.contains('database error saving new user')) {
       return const UsernameAlreadyTakenError('Username is already in use.');
     }

@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/auth/auth_repository.dart';
+import '../../domain/auth/auth_state.dart';
 import '../../domain/auth/local_auth_repository.dart';
 import '../../domain/profile/player_profile.dart';
 
@@ -18,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late final AuthRepository _authRepository;
+  StreamSubscription<AppAuthState>? _authSubscription;
   PlayerProfile? _profile;
   bool _isLoading = false;
 
@@ -25,10 +28,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _authRepository = widget.authRepository ?? LocalAuthRepository();
-    _profile = widget.initialProfile;
+
+    if (widget.initialProfile != null) {
+      _profile = widget.initialProfile;
+    } else if (_authRepository.currentState is AuthAuthenticated) {
+      _profile = (_authRepository.currentState as AuthAuthenticated).profile;
+    }
+
+    _authSubscription = _authRepository.authStateChanges.listen((state) {
+      if (state is AuthAuthenticated && mounted) {
+        setState(() => _profile = state.profile);
+      }
+    });
+
     if (_profile == null) {
       _loadProfile();
     }
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadProfile() async {
@@ -36,14 +57,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final p = await _authRepository.getProfile();
     if (mounted) {
       setState(() {
-        _profile =
-            p ??
-            const PlayerProfile(
-              id: 'local_user',
-              username: 'Challenger',
-              displayName: 'Challenger',
-              mmr: 1000,
-            );
+        if (p != null) {
+          _profile = p;
+        }
         _isLoading = false;
       });
     }
@@ -135,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    if (_isLoading && _profile == null) {
       return const Scaffold(
         backgroundColor: AppColors.background,
         body: Center(
@@ -148,8 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _profile ??
         const PlayerProfile(
           id: 'user_001',
-          username: 'ApexReflex',
-          displayName: 'Apex Reflex',
+          username: 'Challenger',
+          displayName: 'Challenger',
           mmr: 1000,
         );
 
@@ -157,7 +173,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+          padding: const EdgeInsets.only(
+            left: 20.0,
+            right: 20.0,
+            top: 24.0,
+            bottom: 96.0,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
