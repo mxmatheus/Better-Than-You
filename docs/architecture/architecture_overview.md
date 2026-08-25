@@ -67,3 +67,10 @@
 8. Server broadcasts ROUND_RESULT.
 9. Clients trigger animated Split Comparison Reveal Card.
 ```
+
+---
+
+## 5. Backend Deep Dive
+
+For the complete PostgreSQL schema, Row Level Security policies, RPC functions, Elo formulas, and concurrency handling, refer to [Backend Architecture](file:///c:/Users/batukksl/Documents/antigravity/happy-goodall/docs/architecture/backend.md).
+
