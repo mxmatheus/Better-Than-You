@@ -64,10 +64,12 @@ flutter run
 - [x] Project setup
 - [x] Core architecture
 - [x] Visual foundation
-- [ ] Challenge engine
-- [ ] Ranked multiplayer
-- [ ] Daily challenge
-- [ ] Leaderboards
+- [x] Deterministic challenge engine
+- [x] Interactive challenge experience
+- [x] Authoritative backend & live database deployment
+- [x] Ranked multiplayer & Elo settlement
+- [ ] Daily challenge mode
+- [ ] Global leaderboards
 - [ ] Release build
 
 ## License

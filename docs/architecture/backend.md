@@ -89,9 +89,31 @@ Immutable telemetry submissions with server-recalculated scores.
 - `raw_evidence` (JSONB)
 - `UNIQUE(round_id, player_id)`
 
+### 3.5 `matchmaking_queue`
+Active queue for players awaiting ranked match assignment.
+- `id` (UUID, Primary Key)
+- `player_id` (UUID UNIQUE references `profiles`)
+- `mmr` (INT)
+- `enqueued_at` (TIMESTAMPTZ)
+
 ---
 
-## 4. Row Level Security (RLS) Model
+## 4. Matchmaking & Forfeit RPCs
+
+### 4.1 `find_or_create_match()`
+Atomic matchmaking and match generation:
+- Checks if player is already in an active match $\to$ returns active match immediately.
+- Looks up waiting opponent with `SELECT ... FOR UPDATE SKIP LOCKED` to prevent concurrent pairing race conditions.
+- Pairs players, inserts `matches` row with server-generated seed, generates 7 deterministic `match_rounds` rows, and returns match assignment.
+- If no opponent is waiting, queues caller into `matchmaking_queue`.
+
+### 4.2 `forfeit_match(p_match_id UUID)`
+- Authoritatively awards win to remaining connected player upon disconnect/forfeit.
+- Invokes `settle_match_internal` transaction-safely.
+
+---
+
+## 5. Row Level Security (RLS) Model
 
 1. **`profiles`:**
    - SELECT: Public.
