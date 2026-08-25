@@ -9,7 +9,9 @@ final class PrecisionValidator
 
   @override
   ValidationStatus validate(
-      PrecisionConfig config, PrecisionEvidence evidence) {
+    PrecisionConfig config,
+    PrecisionEvidence evidence,
+  ) {
     if (evidence.xTouch < 0.0 ||
         evidence.xTouch > 1.0 ||
         evidence.yTouch < 0.0 ||

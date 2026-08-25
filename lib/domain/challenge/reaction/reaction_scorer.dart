@@ -25,7 +25,9 @@ final class ReactionScorer
         evidence.reactionTimeMs > 600) {
       final formatted = status == ValidationStatus.earlyFault
           ? 'FAULT'
-          : (status == ValidationStatus.timeout ? 'TIMEOUT' : '${evidence.reactionTimeMs} ms');
+          : (status == ValidationStatus.timeout
+                ? 'TIMEOUT'
+                : '${evidence.reactionTimeMs} ms');
       return ChallengeResult(
         type: ChallengeType.reaction,
         normalizedScore: 0,

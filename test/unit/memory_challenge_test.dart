@@ -24,11 +24,17 @@ void main() {
 
     test('Generated sequence never contains consecutive duplicate tiles', () {
       for (var seed = 1; seed <= 200; seed++) {
-        final config = generator.generate(seed, options: {'sequenceLength': 10});
+        final config = generator.generate(
+          seed,
+          options: {'sequenceLength': 10},
+        );
         for (var i = 1; i < config.sequence.length; i++) {
-          expect(config.sequence[i], isNot(equals(config.sequence[i - 1])),
-              reason:
-                  'Seed $seed produced duplicate consecutive tile at index $i (${config.sequence})');
+          expect(
+            config.sequence[i],
+            isNot(equals(config.sequence[i - 1])),
+            reason:
+                'Seed $seed produced duplicate consecutive tile at index $i (${config.sequence})',
+          );
         }
       }
     });
@@ -52,7 +58,10 @@ void main() {
         completionTimeMs: 1000,
         rawTaps: [],
       );
-      expect(validator.validate(config, validEvidence), equals(ValidationStatus.valid));
+      expect(
+        validator.validate(config, validEvidence),
+        equals(ValidationStatus.valid),
+      );
 
       const mismatchEvidence = MemoryEvidence(
         clientTimestampMonoMs: 1000,
@@ -61,7 +70,10 @@ void main() {
         completionTimeMs: 1000,
         rawTaps: [],
       );
-      expect(validator.validate(config, mismatchEvidence), equals(ValidationStatus.flagged));
+      expect(
+        validator.validate(config, mismatchEvidence),
+        equals(ValidationStatus.flagged),
+      );
     });
   });
 
@@ -133,18 +145,21 @@ void main() {
       expect(result.formattedMetric, equals('5 / 5'));
     });
 
-    test('5/5 at 0ms scores maximum 1000 points (750 base + 250 speed bonus)', () {
-      final evidence = MemoryEvidence(
-        clientTimestampMonoMs: 0,
-        correctCount: 5,
-        sequenceLength: 5,
-        completionTimeMs: 0,
-        rawTaps: [],
-      );
-      final result = scorer.score(config5, evidence);
-      expect(result.normalizedScore, equals(1000));
-      expect(result.formattedMetric, equals('5 / 5'));
-    });
+    test(
+      '5/5 at 0ms scores maximum 1000 points (750 base + 250 speed bonus)',
+      () {
+        final evidence = MemoryEvidence(
+          clientTimestampMonoMs: 0,
+          correctCount: 5,
+          sequenceLength: 5,
+          completionTimeMs: 0,
+          rawTaps: [],
+        );
+        final result = scorer.score(config5, evidence);
+        expect(result.normalizedScore, equals(1000));
+        expect(result.formattedMetric, equals('5 / 5'));
+      },
+    );
 
     test('5/5 at 3000ms scores 750 + round(250 * 0.5) = 875 points', () {
       final evidence = MemoryEvidence(

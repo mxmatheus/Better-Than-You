@@ -21,17 +21,25 @@ final class DailyUserRankSummary {
     required this.durationUntilNextChallenge,
   });
 
-  factory DailyUserRankSummary.fromJson(Map<String, dynamic> json, {String? currentUserId}) {
+  factory DailyUserRankSummary.fromJson(
+    Map<String, dynamic> json, {
+    String? currentUserId,
+  }) {
     final hasCompleted = json['has_completed'] as bool? ?? false;
     final dateStr = json['challenge_date'] as String?;
-    final date = dateStr != null ? DateTime.parse(dateStr) : DateTime.now().toUtc();
+    final date = dateStr != null
+        ? DateTime.parse(dateStr)
+        : DateTime.now().toUtc();
     final msUntil = (json['ms_until_next_challenge'] as num?)?.toInt() ?? 0;
 
-    final nearbyList = (json['nearby_players'] as List<dynamic>?)
-            ?.map((e) => DailyLeaderboardEntry.fromJson(
-                  e as Map<String, dynamic>,
-                  currentUserId: currentUserId,
-                ))
+    final nearbyList =
+        (json['nearby_players'] as List<dynamic>?)
+            ?.map(
+              (e) => DailyLeaderboardEntry.fromJson(
+                e as Map<String, dynamic>,
+                currentUserId: currentUserId,
+              ),
+            )
             .toList() ??
         const [];
 

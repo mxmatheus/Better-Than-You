@@ -91,21 +91,21 @@ final class PlayerProfile {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'username': username,
-        'display_name': displayName,
-        'avatar_id': avatarId,
-        'avatar_url': avatarUrl,
-        'mmr': mmr,
-        'provisional_matches_remaining': provisionalMatchesRemaining,
-        'matches_played': matchesPlayed,
-        'wins': wins,
-        'losses': losses,
-        'draws': draws,
-        'reaction_average': reactionAverage,
-        'memory_average': memoryAverage,
-        'precision_average': precisionAverage,
-      };
+    'id': id,
+    'username': username,
+    'display_name': displayName,
+    'avatar_id': avatarId,
+    'avatar_url': avatarUrl,
+    'mmr': mmr,
+    'provisional_matches_remaining': provisionalMatchesRemaining,
+    'matches_played': matchesPlayed,
+    'wins': wins,
+    'losses': losses,
+    'draws': draws,
+    'reaction_average': reactionAverage,
+    'memory_average': memoryAverage,
+    'precision_average': precisionAverage,
+  };
 
   PlayerProfile copyWith({
     String? displayName,

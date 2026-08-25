@@ -18,7 +18,9 @@ final class RoundResult {
   });
 
   static RoundOutcome determineOutcome(
-      ChallengeResult player, ChallengeResult opponent) {
+    ChallengeResult player,
+    ChallengeResult opponent,
+  ) {
     if (player.normalizedScore > opponent.normalizedScore) {
       return RoundOutcome.win;
     } else if (player.normalizedScore < opponent.normalizedScore) {

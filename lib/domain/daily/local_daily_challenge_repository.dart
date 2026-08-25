@@ -83,14 +83,17 @@ final class LocalDailyChallengeRepository implements DailyChallengeRepository {
     final result = def.scorer.score(config, evidence);
 
     if (_activeSubmission != null) {
-      final newScores = List<int>.from(_activeSubmission!.roundScores)..add(result.normalizedScore);
+      final newScores = List<int>.from(_activeSubmission!.roundScores)
+        ..add(result.normalizedScore);
       final isFinished = roundIndex >= 10;
 
       _activeSubmission = _activeSubmission!.copyWith(
         currentRoundIndex: isFinished ? 10 : roundIndex + 1,
         totalScore: _activeSubmission!.totalScore + result.normalizedScore,
         roundScores: newScores,
-        status: isFinished ? DailyAttemptStatus.completed : DailyAttemptStatus.inProgress,
+        status: isFinished
+            ? DailyAttemptStatus.completed
+            : DailyAttemptStatus.inProgress,
         completedAt: isFinished ? DateTime.now().toUtc() : null,
       );
     }
@@ -141,7 +144,11 @@ final class LocalDailyChallengeRepository implements DailyChallengeRepository {
   @override
   Future<DailyUserRankSummary> getUserRank({DateTime? date}) async {
     final utcDate = date?.toUtc() ?? DateTime.now().toUtc();
-    final tomorrowUtc = DateTime.utc(utcDate.year, utcDate.month, utcDate.day + 1);
+    final tomorrowUtc = DateTime.utc(
+      utcDate.year,
+      utcDate.month,
+      utcDate.day + 1,
+    );
     final remaining = tomorrowUtc.difference(DateTime.now().toUtc());
 
     if (_activeSubmission == null || !_activeSubmission!.isCompleted) {
@@ -153,7 +160,9 @@ final class LocalDailyChallengeRepository implements DailyChallengeRepository {
         totalParticipants: 0,
         percentile: 100.0,
         nearbyPlayers: const [],
-        durationUntilNextChallenge: remaining.isNegative ? Duration.zero : remaining,
+        durationUntilNextChallenge: remaining.isNegative
+            ? Duration.zero
+            : remaining,
       );
     }
 
@@ -167,7 +176,9 @@ final class LocalDailyChallengeRepository implements DailyChallengeRepository {
       totalParticipants: 142,
       percentile: 2.1,
       nearbyPlayers: entries,
-      durationUntilNextChallenge: remaining.isNegative ? Duration.zero : remaining,
+      durationUntilNextChallenge: remaining.isNegative
+          ? Duration.zero
+          : remaining,
     );
   }
 }

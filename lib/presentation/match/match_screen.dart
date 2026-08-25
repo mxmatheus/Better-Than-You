@@ -68,7 +68,8 @@ class _MatchScreenState extends State<MatchScreen> {
       oppWins++;
     }
 
-    final updatedHistory = List<RoundResult>.from(_session.history)..add(roundResult);
+    final updatedHistory = List<RoundResult>.from(_session.history)
+      ..add(roundResult);
 
     if (!mounted) return;
     setState(() {
@@ -130,7 +131,9 @@ class _MatchScreenState extends State<MatchScreen> {
                 children: [
                   // Active Challenge Widget (Keyed to round index for clean reset)
                   KeyedSubtree(
-                    key: ValueKey('round_${_session.currentRoundIndex}_$currentType'),
+                    key: ValueKey(
+                      'round_${_session.currentRoundIndex}_$currentType',
+                    ),
                     child: _buildChallengeWidget(currentType, config),
                   ),
 

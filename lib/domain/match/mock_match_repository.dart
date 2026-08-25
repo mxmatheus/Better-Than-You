@@ -15,7 +15,8 @@ final class MockMatchRepository implements MatchRepository {
 
   @override
   Future<MatchSession> createMatch({int? seed}) async {
-    final matchSeed = seed ?? (DateTime.now().millisecondsSinceEpoch & 0xFFFFFFFF);
+    final matchSeed =
+        seed ?? (DateTime.now().millisecondsSinceEpoch & 0xFFFFFFFF);
     return MatchSession(
       matchId: 'local_demo_${matchSeed.toRadixString(16)}',
       matchSeed: matchSeed,
@@ -65,7 +66,8 @@ final class MockMatchRepository implements MatchRepository {
   @override
   Future<MatchSession> nextRound(MatchSession session) async {
     final nextRoundIndex = session.currentRoundIndex + 1;
-    final isFinished = session.isMatchOver || nextRoundIndex > session.totalRounds;
+    final isFinished =
+        session.isMatchOver || nextRoundIndex > session.totalRounds;
 
     return session.copyWith(
       currentRoundIndex: nextRoundIndex,
@@ -100,7 +102,10 @@ final class MockMatchRepository implements MatchRepository {
       case ChallengeType.memory:
         final memConfig = config as MemoryConfig;
         // Opponent gets 4 or 5 correct
-        final correctCount = prng.nextInt(memConfig.sequenceLength - 1, memConfig.sequenceLength);
+        final correctCount = prng.nextInt(
+          memConfig.sequenceLength - 1,
+          memConfig.sequenceLength,
+        );
         final completionTime = prng.nextInt(2500, 4800);
         final def = ChallengeRegistry.getDefinition(type);
         return def.scorer.score(

@@ -24,42 +24,57 @@ void main() {
 
       for (var i = 0; i < 5; i++) {
         final u = prng.nextUint32();
-        expect(u, equals(expectedUints[i]),
-            reason: 'Iteration ${i + 1} uint32 mismatch');
+        expect(
+          u,
+          equals(expectedUints[i]),
+          reason: 'Iteration ${i + 1} uint32 mismatch',
+        );
         final f = u / 4294967296.0;
-        expect(f, closeTo(expectedFloats[i], 1e-12),
-            reason: 'Iteration ${i + 1} float mismatch');
+        expect(
+          f,
+          closeTo(expectedFloats[i], 1e-12),
+          reason: 'Iteration ${i + 1} float mismatch',
+        );
       }
     });
 
-    test('Seed 314159265 matches verified 5-iteration uint32 and float vectors', () {
-      final prng = Mulberry32(314159265);
+    test(
+      'Seed 314159265 matches verified 5-iteration uint32 and float vectors',
+      () {
+        final prng = Mulberry32(314159265);
 
-      final expectedUints = [
-        1158041355,
-        2101024409,
-        43271312,
-        1001472154,
-        2510391038,
-      ];
+        final expectedUints = [
+          1158041355,
+          2101024409,
+          43271312,
+          1001472154,
+          2510391038,
+        ];
 
-      final expectedFloats = [
-        0.26962751406244934,
-        0.48918286547996104,
-        0.010074887424707413,
-        0.23317340621724725,
-        0.5844959612004459,
-      ];
+        final expectedFloats = [
+          0.26962751406244934,
+          0.48918286547996104,
+          0.010074887424707413,
+          0.23317340621724725,
+          0.5844959612004459,
+        ];
 
-      for (var i = 0; i < 5; i++) {
-        final u = prng.nextUint32();
-        expect(u, equals(expectedUints[i]),
-            reason: 'Iteration ${i + 1} uint32 mismatch');
-        final f = u / 4294967296.0;
-        expect(f, closeTo(expectedFloats[i], 1e-12),
-            reason: 'Iteration ${i + 1} float mismatch');
-      }
-    });
+        for (var i = 0; i < 5; i++) {
+          final u = prng.nextUint32();
+          expect(
+            u,
+            equals(expectedUints[i]),
+            reason: 'Iteration ${i + 1} uint32 mismatch',
+          );
+          final f = u / 4294967296.0;
+          expect(
+            f,
+            closeTo(expectedFloats[i], 1e-12),
+            reason: 'Iteration ${i + 1} float mismatch',
+          );
+        }
+      },
+    );
 
     test('PRNG is 100% reproducible with identical seed', () {
       final prngA = Mulberry32(987654321);

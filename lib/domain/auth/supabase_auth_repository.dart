@@ -1,6 +1,10 @@
 import 'dart:async';
-import 'package:supabase_flutter/supabase_flutter.dart' hide AuthUser;
+import 'dart:io';
+import 'package:supabase_flutter/supabase_flutter.dart'
+    hide AuthUser, AuthException;
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import '../profile/player_profile.dart';
+import 'auth_error.dart';
 import 'auth_repository.dart';
 import 'auth_state.dart';
 import 'auth_user.dart';
@@ -11,9 +15,7 @@ final class SupabaseAuthRepository implements AuthRepository {
   final _controller = StreamController<AppAuthState>.broadcast();
   StreamSubscription<AuthState>? _authSubscription;
 
-  SupabaseAuthRepository({
-    required SupabaseClient client,
-  }) : _client = client {
+  SupabaseAuthRepository({required SupabaseClient client}) : _client = client {
     _init();
   }
 
@@ -22,10 +24,19 @@ final class SupabaseAuthRepository implements AuthRepository {
       final session = data.session;
       if (session != null) {
         try {
-          final profile = await _fetchProfile(session.user.id);
+          var profile = await _fetchProfile(session.user.id);
+          if (profile == null) {
+            // Profile trigger may be asynchronous on first OAuth login
+            await Future.delayed(const Duration(milliseconds: 300));
+            profile = await _fetchProfile(session.user.id);
+          }
+
           if (profile != null) {
             _state = AuthAuthenticated(
-              user: AuthUser(id: session.user.id, email: session.user.email ?? ''),
+              user: AuthUser(
+                id: session.user.id,
+                email: session.user.email ?? '',
+              ),
               profile: profile,
             );
           } else {
@@ -60,12 +71,17 @@ final class SupabaseAuthRepository implements AuthRepository {
 
       final user = res.user;
       if (user == null) {
-        throw StateError('Failed to retrieve user session');
+        throw const InvalidCredentialsError();
       }
 
-      final profile = await _fetchProfile(user.id);
+      var profile = await _fetchProfile(user.id);
       if (profile == null) {
-        throw StateError('Profile not found for user');
+        await Future.delayed(const Duration(milliseconds: 300));
+        profile = await _fetchProfile(user.id);
+      }
+
+      if (profile == null) {
+        throw const ProfileProvisioningError();
       }
 
       _state = AuthAuthenticated(
@@ -74,16 +90,24 @@ final class SupabaseAuthRepository implements AuthRepository {
       );
       _controller.add(_state);
       return profile;
-    } on AuthException catch (e) {
-      final message = _translateAuthError(e.message);
-      _state = AuthUnauthenticated(errorMessage: message);
+    } on supa.AuthException catch (e) {
+      final error = _mapAuthException(e);
+      _state = AuthUnauthenticated(errorMessage: error.message);
       _controller.add(_state);
-      throw ArgumentError(message);
+      throw error;
+    } on SocketException {
+      const error = NetworkAuthError();
+      _state = AuthUnauthenticated(errorMessage: error.message);
+      _controller.add(_state);
+      throw error;
     } catch (e) {
-      const message = 'Unable to connect to the authentication server. Please check your connection.';
-      _state = const AuthUnauthenticated(errorMessage: message);
+      if (e is AuthError) rethrow;
+      const error = UnknownAuthError(
+        'Unable to sign in. Please check your details.',
+      );
+      _state = AuthUnauthenticated(errorMessage: error.message);
       _controller.add(_state);
-      throw StateError(message);
+      throw error;
     }
   }
 
@@ -98,27 +122,26 @@ final class SupabaseAuthRepository implements AuthRepository {
       final res = await _client.auth.signUp(
         email: email.trim(),
         password: password,
-        data: {
-          'username': username.trim(),
-          'display_name': displayName.trim(),
-        },
+        data: {'username': username.trim(), 'display_name': displayName.trim()},
       );
 
       final user = res.user;
       if (user == null) {
-        throw StateError('Failed to create account');
+        throw const UnknownAuthError(
+          "We couldn't create your account. Please try again.",
+        );
       }
 
       var profile = await _fetchProfile(user.id);
       if (profile == null) {
-        await Future.delayed(const Duration(milliseconds: 300));
+        await Future.delayed(const Duration(milliseconds: 400));
         profile = await _fetchProfile(user.id);
       }
 
       profile ??= PlayerProfile(
         id: user.id,
-        username: username,
-        displayName: displayName,
+        username: username.trim(),
+        displayName: displayName.trim(),
         mmr: 1000,
       );
 
@@ -128,16 +151,77 @@ final class SupabaseAuthRepository implements AuthRepository {
       );
       _controller.add(_state);
       return profile;
-    } on AuthException catch (e) {
-      final message = _translateAuthError(e.message);
-      _state = AuthUnauthenticated(errorMessage: message);
+    } on supa.AuthException catch (e) {
+      final error = _mapAuthException(e);
+      _state = AuthUnauthenticated(errorMessage: error.message);
       _controller.add(_state);
-      throw ArgumentError(message);
+      throw error;
+    } on SocketException {
+      const error = NetworkAuthError();
+      _state = AuthUnauthenticated(errorMessage: error.message);
+      _controller.add(_state);
+      throw error;
     } catch (e) {
-      const message = 'Failed to register account. Please try again.';
-      _state = const AuthUnauthenticated(errorMessage: message);
+      if (e is AuthError) rethrow;
+      const error = UnknownAuthError(
+        "We couldn't create your account. Please try again.",
+      );
+      _state = AuthUnauthenticated(errorMessage: error.message);
       _controller.add(_state);
-      throw StateError(message);
+      throw error;
+    }
+  }
+
+  @override
+  Future<PlayerProfile> signInWithGoogle() async {
+    try {
+      final isLaunched = await _client.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'io.supabase.betterthanyou://login-callback',
+      );
+
+      if (!isLaunched) {
+        throw const OAuthFailedError(
+          'Could not launch Google authentication window.',
+        );
+      }
+
+      final current = _client.auth.currentUser;
+      if (current != null) {
+        final profile = await _fetchProfile(current.id);
+        if (profile != null) {
+          _state = AuthAuthenticated(
+            user: AuthUser(id: current.id, email: current.email ?? ''),
+            profile: profile,
+          );
+          _controller.add(_state);
+          return profile;
+        }
+      }
+
+      throw const OAuthCancelledError();
+    } on supa.AuthException catch (e) {
+      final error = _mapAuthException(e);
+      throw error;
+    } catch (e) {
+      if (e is AuthError) rethrow;
+      throw const OAuthFailedError();
+    }
+  }
+
+  @override
+  Future<bool> checkUsernameAvailable(String username) async {
+    final trimmed = username.trim();
+    if (trimmed.length < 3 || trimmed.length > 20) return false;
+
+    try {
+      final res = await _client.rpc(
+        'check_username_available',
+        params: {'p_username': trimmed},
+      );
+      return res as bool? ?? false;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -190,7 +274,7 @@ final class SupabaseAuthRepository implements AuthRepository {
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) {
-      throw StateError('User is not authenticated');
+      throw const InvalidCredentialsError('User is not authenticated');
     }
 
     final updateData = <String, dynamic>{};
@@ -210,7 +294,7 @@ final class SupabaseAuthRepository implements AuthRepository {
       _controller.add(_state);
       return updated;
     }
-    throw StateError('Failed to refresh profile');
+    throw const ProfileProvisioningError('Failed to refresh profile');
   }
 
   Future<PlayerProfile?> _fetchProfile(String userId) async {
@@ -224,20 +308,44 @@ final class SupabaseAuthRepository implements AuthRepository {
     return PlayerProfile.fromJson(data);
   }
 
-  String _translateAuthError(String rawMessage) {
-    final lower = rawMessage.toLowerCase();
-    if (lower.contains('invalid login credentials') ||
-        lower.contains('invalid grant') ||
-        lower.contains('invalid credentials')) {
-      return 'Invalid email or password. Please try again.';
+  AuthError _mapAuthException(supa.AuthException e) {
+    final message = e.message.toLowerCase();
+    final code = e.code?.toLowerCase() ?? '';
+
+    if (message.contains('username_already_taken') ||
+        message.contains('profiles_username_key') ||
+        message.contains('username is already taken')) {
+      return const UsernameAlreadyTakenError();
     }
-    if (lower.contains('user already registered') || lower.contains('already exists')) {
-      return 'An account with this email or username already exists.';
+    if (code == 'user_already_exists' ||
+        message.contains('user already registered') ||
+        message.contains('already registered') ||
+        message.contains('email already exists')) {
+      return const EmailAlreadyRegisteredError();
     }
-    if (lower.contains('password should be at least')) {
-      return 'Password must be at least 6 characters long.';
+    if (code == 'invalid_credentials' ||
+        code == 'invalid_grant' ||
+        message.contains('invalid login credentials') ||
+        message.contains('invalid credentials')) {
+      return const InvalidCredentialsError();
     }
-    return rawMessage;
+    if (message.contains('password should be at least') ||
+        message.contains('weak password') ||
+        code == 'weak_password') {
+      return const WeakPasswordError();
+    }
+    if (message.contains('invalid email') || code == 'invalid_email') {
+      return const InvalidEmailError();
+    }
+    if (message.contains('canceled') || message.contains('cancelled')) {
+      return const OAuthCancelledError();
+    }
+    if (message.contains('database error saving new user')) {
+      return const UsernameAlreadyTakenError(
+        'Username or email is already in use.',
+      );
+    }
+    return UnknownAuthError(e.message);
   }
 
   void dispose() {

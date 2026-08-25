@@ -10,11 +10,7 @@ class ProfileScreen extends StatefulWidget {
   final AuthRepository? authRepository;
   final PlayerProfile? initialProfile;
 
-  const ProfileScreen({
-    super.key,
-    this.authRepository,
-    this.initialProfile,
-  });
+  const ProfileScreen({super.key, this.authRepository, this.initialProfile});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -40,7 +36,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final p = await _authRepository.getProfile();
     if (mounted) {
       setState(() {
-        _profile = p ??
+        _profile =
+            p ??
             const PlayerProfile(
               id: 'local_user',
               username: 'Challenger',
@@ -55,10 +52,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _handleLogout() async {
     await _authRepository.signOut();
     if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   Future<void> _showEditDisplayNameDialog() async {
@@ -82,7 +78,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: AppTypography.bodyLarge.copyWith(color: AppColors.textPrimary),
           decoration: InputDecoration(
             hintText: 'Enter new display name',
-            hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+            hintStyle: AppTypography.bodyMedium.copyWith(
+              color: AppColors.textMuted,
+            ),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: AppColors.surfaceBorder),
             ),
@@ -96,7 +94,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
               'CANCEL',
-              style: AppTypography.badgeText.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.badgeText.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           ElevatedButton(
@@ -104,17 +104,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: AppColors.background,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
-            child: Text('SAVE', style: AppTypography.badgeText.copyWith(color: AppColors.background)),
+            child: Text(
+              'SAVE',
+              style: AppTypography.badgeText.copyWith(
+                color: AppColors.background,
+              ),
+            ),
           ),
         ],
       ),
     );
 
-    if (newName != null && newName.isNotEmpty && newName != _profile!.displayName) {
+    if (newName != null &&
+        newName.isNotEmpty &&
+        newName != _profile!.displayName) {
       try {
-        final updated = await _authRepository.updateProfile(displayName: newName);
+        final updated = await _authRepository.updateProfile(
+          displayName: newName,
+        );
         if (mounted) {
           setState(() => _profile = updated);
         }
@@ -133,7 +144,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    final p = _profile ??
+    final p =
+        _profile ??
         const PlayerProfile(
           id: 'user_001',
           username: 'ApexReflex',
@@ -170,8 +182,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       child: Center(
                         child: Text(
-                          p.username.isNotEmpty ? p.username[0].toUpperCase() : 'U',
-                          style: AppTypography.titleLarge.copyWith(color: AppColors.primary),
+                          p.username.isNotEmpty
+                              ? p.username[0].toUpperCase()
+                              : 'U',
+                          style: AppTypography.titleLarge.copyWith(
+                            color: AppColors.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -185,12 +201,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Expanded(
                                 child: Text(
                                   p.displayName,
-                                  style: AppTypography.titleMedium.copyWith(color: AppColors.textPrimary),
+                                  style: AppTypography.titleMedium.copyWith(
+                                    color: AppColors.textPrimary,
+                                  ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               IconButton(
-                                icon: const Icon(Icons.edit, size: 16, color: AppColors.textSecondary),
+                                icon: const Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                  color: AppColors.textSecondary,
+                                ),
                                 onPressed: _showEditDisplayNameDialog,
                                 tooltip: 'Edit Display Name',
                               ),
@@ -198,7 +220,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Text(
                             '@${p.username}',
-                            style: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: AppColors.textMuted,
+                            ),
                           ),
                         ],
                       ),
@@ -223,17 +247,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         Text(
                           'RANK TIER',
-                          style: AppTypography.badgeText.copyWith(color: AppColors.textSecondary),
+                          style: AppTypography.badgeText.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withAlpha(30),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             p.rankDivision,
-                            style: AppTypography.badgeText.copyWith(color: AppColors.primary),
+                            style: AppTypography.badgeText.copyWith(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ],
@@ -253,7 +284,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(width: 8),
                         Text(
                           'MMR',
-                          style: AppTypography.titleMedium.copyWith(color: AppColors.textSecondary),
+                          style: AppTypography.titleMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       ],
                     ),
@@ -285,17 +318,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     Text(
                       'MATCH RECORD',
-                      style: AppTypography.badgeText.copyWith(color: AppColors.textSecondary),
+                      style: AppTypography.badgeText.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _StatItem(label: 'PLAYED', value: '${p.matchesPlayed}'),
-                        _StatItem(label: 'WINS', value: '${p.wins}', color: AppColors.win),
-                        _StatItem(label: 'LOSSES', value: '${p.losses}', color: AppColors.loss),
+                        _StatItem(
+                          label: 'WINS',
+                          value: '${p.wins}',
+                          color: AppColors.win,
+                        ),
+                        _StatItem(
+                          label: 'LOSSES',
+                          value: '${p.losses}',
+                          color: AppColors.loss,
+                        ),
                         _StatItem(label: 'DRAWS', value: '${p.draws}'),
-                        _StatItem(label: 'WIN RATE', value: '${p.winRate.toStringAsFixed(1)}%'),
+                        _StatItem(
+                          label: 'WIN RATE',
+                          value: '${p.winRate.toStringAsFixed(1)}%',
+                        ),
                       ],
                     ),
                     const Divider(color: AppColors.surfaceBorder, height: 32),
@@ -307,12 +353,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               'STRONGEST ATTRIBUTE',
-                              style: AppTypography.badgeText.copyWith(color: AppColors.textMuted),
+                              style: AppTypography.badgeText.copyWith(
+                                color: AppColors.textMuted,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               p.strongestSkill,
-                              style: AppTypography.titleMedium.copyWith(color: AppColors.win),
+                              style: AppTypography.titleMedium.copyWith(
+                                color: AppColors.win,
+                              ),
                             ),
                           ],
                         ),
@@ -321,12 +371,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           children: [
                             Text(
                               'WEAKEST ATTRIBUTE',
-                              style: AppTypography.badgeText.copyWith(color: AppColors.textMuted),
+                              style: AppTypography.badgeText.copyWith(
+                                color: AppColors.textMuted,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               p.weakSkill,
-                              style: AppTypography.titleMedium.copyWith(color: AppColors.loss),
+                              style: AppTypography.titleMedium.copyWith(
+                                color: AppColors.loss,
+                              ),
                             ),
                           ],
                         ),
@@ -343,12 +397,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 icon: const Icon(Icons.logout, size: 18, color: AppColors.loss),
                 label: Text(
                   'LOGOUT',
-                  style: AppTypography.badgeText.copyWith(color: AppColors.loss),
+                  style: AppTypography.badgeText.copyWith(
+                    color: AppColors.loss,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: AppColors.loss),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
               ),
             ],
@@ -364,11 +422,7 @@ class _StatItem extends StatelessWidget {
   final String value;
   final Color? color;
 
-  const _StatItem({
-    required this.label,
-    required this.value,
-    this.color,
-  });
+  const _StatItem({required this.label, required this.value, this.color});
 
   @override
   Widget build(BuildContext context) {

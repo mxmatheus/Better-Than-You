@@ -4,13 +4,7 @@ import '../../../core/services/haptic_service.dart';
 import '../../../domain/challenge/challenge_config.dart';
 import '../../../domain/challenge/challenge_evidence.dart';
 
-enum MemoryUiState {
-  preparing,
-  playback,
-  inputMode,
-  failed,
-  completed,
-}
+enum MemoryUiState { preparing, playback, inputMode, failed, completed }
 
 class MemoryRuntimeController extends ChangeNotifier {
   final MemoryConfig config;
@@ -33,10 +27,7 @@ class MemoryRuntimeController extends ChangeNotifier {
   Timer? _playbackTimer;
   Timer? _timeoutTimer;
 
-  MemoryRuntimeController({
-    required this.config,
-    required this.onComplete,
-  });
+  MemoryRuntimeController({required this.config, required this.onComplete});
 
   void start() {
     _state = MemoryUiState.preparing;

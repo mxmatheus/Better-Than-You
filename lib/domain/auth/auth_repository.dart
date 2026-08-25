@@ -14,16 +14,17 @@ abstract interface class AuthRepository {
     required String displayName,
   });
 
+  Future<PlayerProfile> signInWithGoogle();
+
+  Future<bool> checkUsernameAvailable(String username);
+
   Future<void> signOut();
 
   Future<PlayerProfile?> restoreSession();
 
   Future<PlayerProfile?> getProfile();
 
-  Future<PlayerProfile> updateProfile({
-    String? displayName,
-    String? avatarUrl,
-  });
+  Future<PlayerProfile> updateProfile({String? displayName, String? avatarUrl});
 
   Stream<AppAuthState> get authStateChanges;
 

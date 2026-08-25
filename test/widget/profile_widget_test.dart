@@ -11,7 +11,9 @@ import 'package:better_than_you/presentation/shell/app_shell.dart';
 
 void main() {
   group('ProfileScreen & AppShell Widget Tests', () {
-    testWidgets('ProfileScreen renders identity, MMR, rank badge, and stats', (tester) async {
+    testWidgets('ProfileScreen renders identity, MMR, rank badge, and stats', (
+      tester,
+    ) async {
       const profile = PlayerProfile(
         id: 'user_123',
         username: 'ApexReflex',
@@ -36,10 +38,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.darkTheme,
-          home: ProfileScreen(
-            authRepository: repo,
-            initialProfile: profile,
-          ),
+          home: ProfileScreen(authRepository: repo, initialProfile: profile),
         ),
       );
 
@@ -54,42 +53,45 @@ void main() {
       expect(find.text('LOGOUT'), findsOneWidget);
     });
 
-    testWidgets('ProfileScreen logout button signs out and removes navigation stack', (tester) async {
-      const profile = PlayerProfile(
-        id: 'user_123',
-        username: 'ApexReflex',
-        displayName: 'Apex Master',
-        mmr: 1000,
-      );
+    testWidgets(
+      'ProfileScreen logout button signs out and removes navigation stack',
+      (tester) async {
+        const profile = PlayerProfile(
+          id: 'user_123',
+          username: 'ApexReflex',
+          displayName: 'Apex Master',
+          mmr: 1000,
+        );
 
-      final repo = LocalAuthRepository(
-        initialState: const AuthAuthenticated(
-          user: AuthUser(id: 'user_123', email: 'apex@example.com'),
-          profile: profile,
-        ),
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: ProfileScreen(
-            authRepository: repo,
-            initialProfile: profile,
+        final repo = LocalAuthRepository(
+          initialState: const AuthAuthenticated(
+            user: AuthUser(id: 'user_123', email: 'apex@example.com'),
+            profile: profile,
           ),
-          routes: {
-            AppRoutes.login: (_) => const Scaffold(body: Text('LOGIN_SCREEN')),
-          },
-        ),
-      );
+        );
 
-      await tester.tap(find.text('LOGOUT'));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: ProfileScreen(authRepository: repo, initialProfile: profile),
+            routes: {
+              AppRoutes.login: (_) =>
+                  const Scaffold(body: Text('LOGIN_SCREEN')),
+            },
+          ),
+        );
 
-      expect(repo.currentState.isAuthenticated, isFalse);
-      expect(find.text('LOGIN_SCREEN'), findsOneWidget);
-    });
+        await tester.tap(find.text('LOGOUT'));
+        await tester.pumpAndSettle();
 
-    testWidgets('AppShell renders bottom navigation bar and switches tabs', (tester) async {
+        expect(repo.currentState.isAuthenticated, isFalse);
+        expect(find.text('LOGIN_SCREEN'), findsOneWidget);
+      },
+    );
+
+    testWidgets('AppShell renders bottom navigation bar and switches tabs', (
+      tester,
+    ) async {
       final repo = LocalAuthRepository(
         initialState: const AuthAuthenticated(
           user: AuthUser(id: 'user_1', email: 'test@example.com'),

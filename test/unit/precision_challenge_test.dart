@@ -37,7 +37,10 @@ void main() {
         timeToTapMs: 200,
         distanceError: 0.05,
       );
-      expect(validator.validate(config, validEvidence), equals(ValidationStatus.valid));
+      expect(
+        validator.validate(config, validEvidence),
+        equals(ValidationStatus.valid),
+      );
 
       const outOfBoundsEvidence = PrecisionEvidence(
         clientTimestampMonoMs: 200,
@@ -46,7 +49,10 @@ void main() {
         timeToTapMs: 200,
         distanceError: 0.05,
       );
-      expect(validator.validate(config, outOfBoundsEvidence), equals(ValidationStatus.flagged));
+      expect(
+        validator.validate(config, outOfBoundsEvidence),
+        equals(ValidationStatus.flagged),
+      );
     });
   });
 
@@ -66,18 +72,21 @@ void main() {
       expect(result.formattedMetric, equals('100.0%'));
     });
 
-    test('Exact boundary hit (d = 0.12) at 0ms scores speed bonus only (150 pts)', () {
-      final evidence = PrecisionEvidence(
-        clientTimestampMonoMs: 0,
-        xTouch: config.xTarget + 0.12,
-        yTouch: config.yTarget,
-        timeToTapMs: 0,
-        distanceError: 0.12,
-      );
-      final result = scorer.score(config, evidence);
-      expect(result.normalizedScore, equals(150));
-      expect(result.formattedMetric, equals('0.0%'));
-    });
+    test(
+      'Exact boundary hit (d = 0.12) at 0ms scores speed bonus only (150 pts)',
+      () {
+        final evidence = PrecisionEvidence(
+          clientTimestampMonoMs: 0,
+          xTouch: config.xTarget + 0.12,
+          yTouch: config.yTarget,
+          timeToTapMs: 0,
+          distanceError: 0.12,
+        );
+        final result = scorer.score(config, evidence);
+        expect(result.normalizedScore, equals(150));
+        expect(result.formattedMetric, equals('0.0%'));
+      },
+    );
 
     test('Outside target boundary (d > 0.12) scores 0 points (MISS)', () {
       final evidence = PrecisionEvidence(

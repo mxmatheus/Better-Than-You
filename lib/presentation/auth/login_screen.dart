@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/auth/auth_error.dart';
 import '../../domain/auth/auth_repository.dart';
 import '../../domain/auth/local_auth_repository.dart';
 
 class LoginScreen extends StatefulWidget {
   final AuthRepository? authRepository;
 
-  const LoginScreen({
-    super.key,
-    this.authRepository,
-  });
+  const LoginScreen({super.key, this.authRepository});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -24,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
   String? _errorMessage;
 
   @override
@@ -40,7 +39,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    if (!_formKey.currentState!.validate() || _isLoading) return;
+    if (!_formKey.currentState!.validate() || _isLoading || _isGoogleLoading) {
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -55,10 +56,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(AppRoutes.home);
-    } on ArgumentError catch (e) {
+    } on AuthError catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = e.message.toString();
+        _errorMessage = e.message;
         _isLoading = false;
       });
     } catch (e) {
@@ -70,6 +71,33 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _handleGoogleSignIn() async {
+    if (_isLoading || _isGoogleLoading) return;
+
+    setState(() {
+      _isGoogleLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await _authRepository.signInWithGoogle();
+      if (!mounted) return;
+      Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+    } on AuthError catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.message;
+        _isGoogleLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = 'Google sign-in failed. Please try again.';
+        _isGoogleLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,7 +105,10 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 24.0,
+              vertical: 32.0,
+            ),
             child: Form(
               key: _formKey,
               child: Column(
@@ -99,12 +130,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 36),
 
                   // Error Banner
                   if (_errorMessage != null) ...[
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.loss.withAlpha(30),
                         border: Border.all(color: AppColors.loss),
@@ -112,12 +146,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.error_outline, size: 18, color: AppColors.loss),
+                          const Icon(
+                            Icons.error_outline,
+                            size: 18,
+                            color: AppColors.loss,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               _errorMessage!,
-                              style: AppTypography.bodyMedium.copyWith(color: AppColors.loss),
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.loss,
+                              ),
                             ),
                           ),
                         ],
@@ -126,31 +166,108 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 20),
                   ],
 
+                  // Google Sign-In Button
+                  OutlinedButton.icon(
+                    onPressed: _isGoogleLoading || _isLoading
+                        ? null
+                        : _handleGoogleSignIn,
+                    icon: _isGoogleLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.g_mobiledata,
+                            size: 28,
+                            color: AppColors.textPrimary,
+                          ),
+                    label: Text(
+                      'CONTINUE WITH GOOGLE',
+                      style: AppTypography.badgeText.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 12,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: AppColors.surfaceBorder,
+                        width: 1.5,
+                      ),
+                      backgroundColor: AppColors.surface,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Divider
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Divider(color: AppColors.surfaceBorder),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'OR',
+                          style: AppTypography.badgeText.copyWith(
+                            color: AppColors.textMuted,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                      const Expanded(
+                        child: Divider(color: AppColors.surfaceBorder),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
                   // Email Input
                   Text(
                     'EMAIL',
-                    style: AppTypography.badgeText.copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.badgeText.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: AppTypography.bodyLarge.copyWith(color: AppColors.textPrimary),
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: AppColors.surface,
                       hintText: 'player@example.com',
-                      hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+                      hintStyle: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                       border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.surfaceBorder,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.surfaceBorder,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -164,33 +281,46 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
                   // Password Input
                   Text(
                     'PASSWORD',
-                    style: AppTypography.badgeText.copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.badgeText.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   TextFormField(
                     controller: _passwordController,
                     obscureText: true,
-                    style: AppTypography.bodyLarge.copyWith(color: AppColors.textPrimary),
+                    style: AppTypography.bodyLarge.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: AppColors.surface,
                       hintText: '••••••••',
-                      hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textMuted),
+                      hintStyle: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                       border: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.surfaceBorder,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.surfaceBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.surfaceBorder,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+                        borderSide: const BorderSide(
+                          color: AppColors.primary,
+                          width: 1.5,
+                        ),
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
@@ -204,16 +334,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       return null;
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
 
                   // Login Button
                   ElevatedButton(
-                    onPressed: _isLoading ? null : _handleLogin,
+                    onPressed: _isLoading || _isGoogleLoading
+                        ? null
+                        : _handleLogin,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.background,
                       padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                     child: _isLoading
                         ? const SizedBox(
@@ -240,10 +374,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         "DON'T HAVE AN ACCOUNT? ",
-                        style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushReplacementNamed(AppRoutes.register),
+                        onTap: () => Navigator.of(
+                          context,
+                        ).pushReplacementNamed(AppRoutes.register),
                         child: Text(
                           'REGISTER',
                           style: AppTypography.badgeText.copyWith(

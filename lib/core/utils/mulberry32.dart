@@ -8,7 +8,8 @@ class Mulberry32 {
     final aHi = (a >> 16) & 0xFFFF;
     final bLo = b & 0xFFFF;
     final bHi = (b >> 16) & 0xFFFF;
-    return ((aLo * bLo) + (((aHi * bLo + aLo * bHi) & 0xFFFF) << 16)) & 0xFFFFFFFF;
+    return ((aLo * bLo) + (((aHi * bLo + aLo * bHi) & 0xFFFF) << 16)) &
+        0xFFFFFFFF;
   }
 
   /// Returns unsigned 32-bit integer in [0, 4294967295]

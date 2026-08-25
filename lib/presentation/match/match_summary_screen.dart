@@ -8,10 +8,7 @@ import '../../domain/match/match_state.dart';
 class MatchSummaryScreen extends StatelessWidget {
   final MatchSession session;
 
-  const MatchSummaryScreen({
-    super.key,
-    required this.session,
-  });
+  const MatchSummaryScreen({super.key, required this.session});
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +77,8 @@ class MatchSummaryScreen extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   itemCount: session.history.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 8),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final item = session.history[index];
                     final isWin = item.outcome == RoundOutcome.win;
@@ -91,12 +89,16 @@ class MatchSummaryScreen extends StatelessWidget {
 
                     return Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(6),
                         border: Border.all(
-                            color: AppColors.surfaceBorder, width: 1),
+                          color: AppColors.surfaceBorder,
+                          width: 1,
+                        ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -134,7 +136,9 @@ class MatchSummaryScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: color.withAlpha(40),
                                   borderRadius: BorderRadius.circular(3),
@@ -173,13 +177,16 @@ class MatchSummaryScreen extends StatelessWidget {
               const SizedBox(height: 12),
               OutlinedButton(
                 onPressed: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
+                  Navigator.of(
+                    context,
+                  ).pushNamedAndRemoveUntil(AppRoutes.home, (route) => false);
                 },
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   side: const BorderSide(
-                      color: AppColors.surfaceBorder, width: 1.5),
+                    color: AppColors.surfaceBorder,
+                    width: 1.5,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),
                   ),

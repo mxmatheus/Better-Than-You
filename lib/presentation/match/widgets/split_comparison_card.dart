@@ -48,25 +48,27 @@ class _SplitComparisonCardState extends State<SplitComparisonCard>
       curve: const Interval(0.0, 0.15, curve: Curves.easeOutCubic),
     );
 
-    _playerScoreAnim = Tween<double>(
-      begin: 0,
-      end: widget.roundResult.playerResult.normalizedScore.toDouble(),
-    ).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.125, 0.35, curve: Curves.easeOut),
-      ),
-    );
+    _playerScoreAnim =
+        Tween<double>(
+          begin: 0,
+          end: widget.roundResult.playerResult.normalizedScore.toDouble(),
+        ).animate(
+          CurvedAnimation(
+            parent: _animController,
+            curve: const Interval(0.125, 0.35, curve: Curves.easeOut),
+          ),
+        );
 
-    _oppScoreAnim = Tween<double>(
-      begin: 0,
-      end: widget.roundResult.opponentResult.normalizedScore.toDouble(),
-    ).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: const Interval(0.375, 0.60, curve: Curves.easeOut),
-      ),
-    );
+    _oppScoreAnim =
+        Tween<double>(
+          begin: 0,
+          end: widget.roundResult.opponentResult.normalizedScore.toDouble(),
+        ).animate(
+          CurvedAnimation(
+            parent: _animController,
+            curve: const Interval(0.375, 0.60, curve: Curves.easeOut),
+          ),
+        );
 
     _outcomeScaleAnim = CurvedAnimation(
       parent: _animController,
@@ -79,31 +81,39 @@ class _SplitComparisonCardState extends State<SplitComparisonCard>
 
   void _startChoreography() {
     // t = 0.4s: YOU section reveals
-    _choreographyTimers.add(Timer(const Duration(milliseconds: 400), () {
-      if (!mounted) return;
-      setState(() => _showPlayer = true);
-      HapticService.lightImpact();
-    }));
+    _choreographyTimers.add(
+      Timer(const Duration(milliseconds: 400), () {
+        if (!mounted) return;
+        setState(() => _showPlayer = true);
+        HapticService.lightImpact();
+      }),
+    );
 
     // t = 1.2s: Opponent section reveals
-    _choreographyTimers.add(Timer(const Duration(milliseconds: 1200), () {
-      if (!mounted) return;
-      setState(() => _showOpponent = true);
-      HapticService.lightImpact();
-    }));
+    _choreographyTimers.add(
+      Timer(const Duration(milliseconds: 1200), () {
+        if (!mounted) return;
+        setState(() => _showOpponent = true);
+        HapticService.lightImpact();
+      }),
+    );
 
     // t = 2.4s: Outcome banner slams in
-    _choreographyTimers.add(Timer(const Duration(milliseconds: 2400), () {
-      if (!mounted) return;
-      setState(() => _showOutcome = true);
-      HapticService.heavyImpact();
-    }));
+    _choreographyTimers.add(
+      Timer(const Duration(milliseconds: 2400), () {
+        if (!mounted) return;
+        setState(() => _showOutcome = true);
+        HapticService.heavyImpact();
+      }),
+    );
 
     // t = 3.2s: Continue button becomes available
-    _choreographyTimers.add(Timer(const Duration(milliseconds: 3200), () {
-      if (!mounted) return;
-      setState(() => _canContinue = true);
-    }));
+    _choreographyTimers.add(
+      Timer(const Duration(milliseconds: 3200), () {
+        if (!mounted) return;
+        setState(() => _canContinue = true);
+      }),
+    );
   }
 
   @override
@@ -160,7 +170,10 @@ class _SplitComparisonCardState extends State<SplitComparisonCard>
                   color: AppColors.surfaceElevated,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
                   border: Border(
-                    bottom: BorderSide(color: AppColors.surfaceBorder, width: 1.5),
+                    bottom: BorderSide(
+                      color: AppColors.surfaceBorder,
+                      width: 1.5,
+                    ),
                   ),
                 ),
                 child: Column(
@@ -216,8 +229,10 @@ class _SplitComparisonCardState extends State<SplitComparisonCard>
                       color: outcomeColor.withAlpha(30),
                       border: Border(
                         top: BorderSide(color: outcomeColor, width: 1.5),
-                        bottom:
-                            BorderSide(color: AppColors.surfaceBorder, width: 1.5),
+                        bottom: BorderSide(
+                          color: AppColors.surfaceBorder,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                     child: Center(

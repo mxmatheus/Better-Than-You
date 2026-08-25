@@ -40,8 +40,14 @@ abstract final class EloCalculator {
     final eb = 1.0 - ea;
 
     final scoreB = 1.0 - scoreA;
-    final ka = getKFactor(mmr: mmrA, provisionalRemaining: provisionalRemainingA);
-    final kb = getKFactor(mmr: mmrB, provisionalRemaining: provisionalRemainingB);
+    final ka = getKFactor(
+      mmr: mmrA,
+      provisionalRemaining: provisionalRemainingA,
+    );
+    final kb = getKFactor(
+      mmr: mmrB,
+      provisionalRemaining: provisionalRemainingB,
+    );
 
     var deltaA = (ka * (scoreA - ea)).round();
     var deltaB = (kb * (scoreB - eb)).round();

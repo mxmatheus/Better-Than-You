@@ -8,8 +8,11 @@ void main() {
         for (var rb = 800; rb <= 2400; rb += 100) {
           final ea = EloCalculator.calculateExpectedScore(ra, rb);
           final eb = EloCalculator.calculateExpectedScore(rb, ra);
-          expect(ea + eb, closeTo(1.0, 1e-9),
-              reason: 'EA + EB must equal 1.0 for RA=$ra, RB=$rb');
+          expect(
+            ea + eb,
+            closeTo(1.0, 1e-9),
+            reason: 'EA + EB must equal 1.0 for RA=$ra, RB=$rb',
+          );
         }
       }
     });
@@ -57,21 +60,24 @@ void main() {
       expect(lossRes.deltaB, equals(24));
     });
 
-    test('Worked Example 3: RA=1800 (K=20), RB=1000 (K=32), Minimum Delta Guarantee', () {
-      final res = EloCalculator.calculateDeltas(
-        mmrA: 1800,
-        mmrB: 1000,
-        provisionalRemainingA: 0,
-        provisionalRemainingB: 0,
-        scoreA: 1.0, // High MMR player wins
-      );
+    test(
+      'Worked Example 3: RA=1800 (K=20), RB=1000 (K=32), Minimum Delta Guarantee',
+      () {
+        final res = EloCalculator.calculateDeltas(
+          mmrA: 1800,
+          mmrB: 1000,
+          provisionalRemainingA: 0,
+          provisionalRemainingB: 0,
+          scoreA: 1.0, // High MMR player wins
+        );
 
-      expect(res.expectedScoreA, closeTo(0.9901, 1e-3));
-      expect(res.expectedScoreB, closeTo(0.0099, 1e-3));
-      // Without minimum delta, deltaA would round to 0. Guaranteed minimum is +1 / -1
-      expect(res.deltaA, greaterThanOrEqualTo(1));
-      expect(res.deltaB, lessThanOrEqualTo(-1));
-    });
+        expect(res.expectedScoreA, closeTo(0.9901, 1e-3));
+        expect(res.expectedScoreB, closeTo(0.0099, 1e-3));
+        // Without minimum delta, deltaA would round to 0. Guaranteed minimum is +1 / -1
+        expect(res.deltaA, greaterThanOrEqualTo(1));
+        expect(res.deltaB, lessThanOrEqualTo(-1));
+      },
+    );
 
     test('Provisional K-Factor is 50 when provisional matches remain', () {
       final res = EloCalculator.calculateDeltas(

@@ -11,10 +11,7 @@ import 'widgets/daily_nearby_list.dart';
 class DailyLeaderboardScreen extends StatefulWidget {
   final DailyChallengeRepository? repository;
 
-  const DailyLeaderboardScreen({
-    super.key,
-    this.repository,
-  });
+  const DailyLeaderboardScreen({super.key, this.repository});
 
   @override
   State<DailyLeaderboardScreen> createState() => _DailyLeaderboardScreenState();
@@ -45,8 +42,13 @@ class _DailyLeaderboardScreenState extends State<DailyLeaderboardScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.textPrimary),
-          onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            size: 18,
+            color: AppColors.textPrimary,
+          ),
+          onPressed: () =>
+              Navigator.of(context).pushReplacementNamed(AppRoutes.home),
         ),
         title: Text(
           'GLOBAL LEADERBOARD',
@@ -70,7 +72,9 @@ class _DailyLeaderboardScreenState extends State<DailyLeaderboardScreen> {
                 children: [
                   Text(
                     'Failed to load leaderboard',
-                    style: AppTypography.bodyMedium.copyWith(color: AppColors.loss),
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.loss,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -90,12 +94,17 @@ class _DailyLeaderboardScreenState extends State<DailyLeaderboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Top Countdown Banner
-                DailyCountdownTimer(initialDuration: summary.durationUntilNextChallenge),
+                DailyCountdownTimer(
+                  initialDuration: summary.durationUntilNextChallenge,
+                ),
                 const SizedBox(height: 24),
 
                 // Today's Score Card
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 24,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     border: Border.all(color: AppColors.accent, width: 1.5),
@@ -186,7 +195,9 @@ class _DailyLeaderboardScreenState extends State<DailyLeaderboardScreen> {
 
                 // Return to Home Action
                 OutlinedButton(
-                  onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+                  onPressed: () => Navigator.of(
+                    context,
+                  ).pushReplacementNamed(AppRoutes.home),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.textPrimary,
                     side: const BorderSide(color: AppColors.surfaceBorder),

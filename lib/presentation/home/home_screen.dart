@@ -10,11 +10,7 @@ class HomeScreen extends StatefulWidget {
   final MatchRepository? matchRepository;
   final AuthRepository? authRepository;
 
-  const HomeScreen({
-    super.key,
-    this.matchRepository,
-    this.authRepository,
-  });
+  const HomeScreen({super.key, this.matchRepository, this.authRepository});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -61,10 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
 
               // Hero Title
-              const Text(
-                'BETTER\nTHAN YOU',
-                style: AppTypography.displayLarge,
-              ),
+              const Text('BETTER\nTHAN YOU', style: AppTypography.displayLarge),
               const SizedBox(height: 8),
               Text(
                 'PROVE IT.',
@@ -111,10 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text(
-                _profile.username,
-                style: AppTypography.titleMedium,
-              ),
+              Text(_profile.username, style: AppTypography.titleMedium),
             ],
           ),
           Row(
@@ -233,10 +223,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'DAILY CHALLENGE',
-                      style: AppTypography.titleMedium,
-                    ),
+                    Text('DAILY CHALLENGE', style: AppTypography.titleMedium),
                     SizedBox(height: 4),
                     Text(
                       '10 universal rounds. 1 official attempt.',
@@ -244,7 +231,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                Icon(Icons.leaderboard, color: AppColors.textSecondary, size: 24),
+                Icon(
+                  Icons.leaderboard,
+                  color: AppColors.textSecondary,
+                  size: 24,
+                ),
               ],
             ),
           ),

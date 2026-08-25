@@ -11,9 +11,8 @@ import 'round_result.dart';
 final class SupabaseMatchRepository implements MatchRepository {
   final SupabaseClient _client;
 
-  const SupabaseMatchRepository({
-    required SupabaseClient client,
-  }) : _client = client;
+  const SupabaseMatchRepository({required SupabaseClient client})
+    : _client = client;
 
   @override
   Future<MatchSession> createMatch({int? seed}) async {
@@ -87,12 +86,15 @@ final class SupabaseMatchRepository implements MatchRepository {
 
     // Call PostgreSQL RPC: submit_round_evidence
     // Backend authoritatively recalculates score and validation status
-    final rpcResult = await _client.rpc('submit_round_evidence', params: {
-      'p_round_id': roundId,
-      'p_evidence': evidence.toJson(),
-      'p_client_claimed_score': null,
-      'p_client_version': '1.0.0',
-    });
+    final rpcResult = await _client.rpc(
+      'submit_round_evidence',
+      params: {
+        'p_round_id': roundId,
+        'p_evidence': evidence.toJson(),
+        'p_client_claimed_score': null,
+        'p_client_version': '1.0.0',
+      },
+    );
 
     final authScore = rpcResult['authoritative_score'] as int? ?? 0;
     final metricText = rpcResult['formatted_metric'] as String? ?? '';
@@ -109,7 +111,9 @@ final class SupabaseMatchRepository implements MatchRepository {
     // Fetch opponent submission if available or poll for completion
     final opponentSub = await _client
         .from('round_submissions')
-        .select('normalized_score, raw_metric, formatted_metric, validation_status')
+        .select(
+          'normalized_score, raw_metric, formatted_metric, validation_status',
+        )
         .eq('round_id', roundId)
         .neq('player_id', user.id)
         .maybeSingle();

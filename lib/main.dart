@@ -28,10 +28,7 @@ Future<void> main() async {
 class BetterThanYouApp extends StatelessWidget {
   final AuthRepository? authRepository;
 
-  const BetterThanYouApp({
-    super.key,
-    this.authRepository,
-  });
+  const BetterThanYouApp({super.key, this.authRepository});
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +37,8 @@ class BetterThanYouApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
       initialRoute: AppRoutes.root,
-      onGenerateRoute: (settings) => AppRouter.generateRoute(
-        settings,
-        authRepository: authRepository,
-      ),
+      onGenerateRoute: (settings) =>
+          AppRouter.generateRoute(settings, authRepository: authRepository),
     );
   }
 }

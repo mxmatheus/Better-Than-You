@@ -46,7 +46,8 @@ final class MatchSession {
     return scheduledChallenges[index];
   }
 
-  int get currentRoundSeed => (matchSeed + currentRoundIndex * 7919) & 0xFFFFFFFF;
+  int get currentRoundSeed =>
+      (matchSeed + currentRoundIndex * 7919) & 0xFFFFFFFF;
 
   MatchSession copyWith({
     String? matchId,

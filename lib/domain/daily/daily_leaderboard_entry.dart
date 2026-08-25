@@ -17,16 +17,24 @@ final class DailyLeaderboardEntry {
     this.isCurrentUser = false,
   });
 
-  factory DailyLeaderboardEntry.fromJson(Map<String, dynamic> json, {String? currentUserId}) {
+  factory DailyLeaderboardEntry.fromJson(
+    Map<String, dynamic> json, {
+    String? currentUserId,
+  }) {
     final uid = json['user_id'] as String? ?? '';
     return DailyLeaderboardEntry(
       rank: (json['rank'] as num?)?.toInt() ?? 0,
       userId: uid,
       username: json['username'] as String? ?? 'Player',
-      displayName: json['display_name'] as String? ?? json['username'] as String? ?? 'Player',
+      displayName:
+          json['display_name'] as String? ??
+          json['username'] as String? ??
+          'Player',
       avatarUrl: json['avatar_url'] as String?,
       totalScore: (json['total_score'] as num?)?.toInt() ?? 0,
-      isCurrentUser: json['is_current_user'] as bool? ?? (currentUserId != null && uid == currentUserId),
+      isCurrentUser:
+          json['is_current_user'] as bool? ??
+          (currentUserId != null && uid == currentUserId),
     );
   }
 }

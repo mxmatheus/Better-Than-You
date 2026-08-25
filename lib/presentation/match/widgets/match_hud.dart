@@ -6,10 +6,7 @@ import '../../../domain/match/match_session.dart';
 class MatchHud extends StatelessWidget {
   final MatchSession session;
 
-  const MatchHud({
-    super.key,
-    required this.session,
-  });
+  const MatchHud({super.key, required this.session});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +29,10 @@ class MatchHud extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.surfaceElevated,
                 borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: AppColors.surfaceBorderLight, width: 1),
+                border: Border.all(
+                  color: AppColors.surfaceBorderLight,
+                  width: 1,
+                ),
               ),
               child: Text(
                 'ROUND ${session.currentRoundIndex} / ${session.totalRounds}',
@@ -57,7 +57,11 @@ class MatchHud extends StatelessWidget {
                     ),
                   ),
                 ),
-                _buildPlayerScore('OPPONENT', session.opponentWins, AppColors.opponent),
+                _buildPlayerScore(
+                  'OPPONENT',
+                  session.opponentWins,
+                  AppColors.opponent,
+                ),
               ],
             ),
           ],

@@ -38,27 +38,20 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final screens = [
-      HomeScreen(
-        matchRepository: widget.matchRepository,
-      ),
-      DailyChallengeScreen(
-        repository: widget.dailyRepository,
-      ),
-      ProfileScreen(
-        authRepository: widget.authRepository,
-      ),
+      HomeScreen(matchRepository: widget.matchRepository),
+      DailyChallengeScreen(repository: widget.dailyRepository),
+      ProfileScreen(authRepository: widget.authRepository),
     ];
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.surfaceBorder, width: 1.0)),
+          border: Border(
+            top: BorderSide(color: AppColors.surfaceBorder, width: 1.0),
+          ),
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
@@ -73,17 +66,29 @@ class _AppShellState extends State<AppShell> {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.flash_on, size: 22),
-              activeIcon: Icon(Icons.flash_on, size: 22, color: AppColors.primary),
+              activeIcon: Icon(
+                Icons.flash_on,
+                size: 22,
+                color: AppColors.primary,
+              ),
               label: 'ARENA',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.calendar_today, size: 20),
-              activeIcon: Icon(Icons.calendar_today, size: 20, color: AppColors.primary),
+              activeIcon: Icon(
+                Icons.calendar_today,
+                size: 20,
+                color: AppColors.primary,
+              ),
               label: 'DAILY',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline, size: 22),
-              activeIcon: Icon(Icons.person, size: 22, color: AppColors.primary),
+              activeIcon: Icon(
+                Icons.person,
+                size: 22,
+                color: AppColors.primary,
+              ),
               label: 'PROFILE',
             ),
           ],

@@ -82,8 +82,9 @@ class _ReactionChallengeWidgetState extends State<ReactionChallengeWidget> {
         }
 
         final isTriggered = state == ReactionUiState.triggered;
-        final textColor =
-            isTriggered ? AppColors.background : AppColors.textPrimary;
+        final textColor = isTriggered
+            ? AppColors.background
+            : AppColors.textPrimary;
 
         return GestureDetector(
           behavior: HitTestBehavior.opaque,

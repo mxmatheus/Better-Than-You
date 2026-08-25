@@ -6,14 +6,12 @@ import 'package:better_than_you/presentation/challenges/widgets/reaction_challen
 
 void main() {
   group('ReactionChallengeWidget Tests', () {
-    testWidgets('Renders preparation and responds to early tap with fault',
-        (WidgetTester tester) async {
+    testWidgets('Renders preparation and responds to early tap with fault', (
+      WidgetTester tester,
+    ) async {
       ReactionEvidence? completedEvidence;
 
-      const config = ReactionConfig(
-        seed: 1337,
-        waitDelayMs: 3000,
-      );
+      const config = ReactionConfig(seed: 1337, waitDelayMs: 3000);
 
       await tester.pumpWidget(
         MaterialApp(
@@ -42,15 +40,13 @@ void main() {
       expect(completedEvidence!.isFault, isTrue);
     });
 
-    testWidgets('Triggers GO state and records reaction time on tap',
-        (WidgetTester tester) async {
+    testWidgets('Triggers GO state and records reaction time on tap', (
+      WidgetTester tester,
+    ) async {
       ReactionEvidence? completedEvidence;
       var simulatedMonoMs = 1000;
 
-      const config = ReactionConfig(
-        seed: 1337,
-        waitDelayMs: 1500,
-      );
+      const config = ReactionConfig(seed: 1337, waitDelayMs: 1500);
 
       await tester.pumpWidget(
         MaterialApp(

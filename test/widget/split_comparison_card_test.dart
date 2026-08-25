@@ -8,8 +8,9 @@ import 'package:better_than_you/presentation/match/widgets/split_comparison_card
 
 void main() {
   group('SplitComparisonCard Animation Choreography Tests', () {
-    testWidgets('Unfolds choreography and enables continue button',
-        (WidgetTester tester) async {
+    testWidgets('Unfolds choreography and enables continue button', (
+      WidgetTester tester,
+    ) async {
       var continueTapped = false;
 
       const roundResult = RoundResult(

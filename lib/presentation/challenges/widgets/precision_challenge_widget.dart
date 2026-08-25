@@ -85,17 +85,14 @@ class _PrecisionChallengeWidgetState extends State<PrecisionChallengeWidget> {
                   color: state == PrecisionUiState.hit
                       ? AppColors.win
                       : (state == PrecisionUiState.missed ||
-                              state == PrecisionUiState.timeout
-                          ? AppColors.loss
-                          : AppColors.primary),
+                                state == PrecisionUiState.timeout
+                            ? AppColors.loss
+                            : AppColors.primary),
                   fontSize: 26,
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style: AppTypography.bodyMedium,
-              ),
+              Text(subtitle, style: AppTypography.bodyMedium),
               const SizedBox(height: 16),
 
               // 1:1 Square Arena fitted inside available space
@@ -124,10 +121,14 @@ class _PrecisionChallengeWidgetState extends State<PrecisionChallengeWidget> {
                             behavior: HitTestBehavior.opaque,
                             onTapDown: (details) {
                               final localPos = details.localPosition;
-                              final xNorm =
-                                  (localPos.dx / arenaSize).clamp(0.0, 1.0);
-                              final yNorm =
-                                  (localPos.dy / arenaSize).clamp(0.0, 1.0);
+                              final xNorm = (localPos.dx / arenaSize).clamp(
+                                0.0,
+                                1.0,
+                              );
+                              final yNorm = (localPos.dy / arenaSize).clamp(
+                                0.0,
+                                1.0,
+                              );
                               _controller.handleTap(xNorm, yNorm);
                             },
                             child: CustomPaint(

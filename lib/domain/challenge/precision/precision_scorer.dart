@@ -43,7 +43,8 @@ final class PrecisionScorer
 
     final accuracyRatio = (1.0 - (distance / rNorm)).clamp(0.0, 1.0);
     final distScore = 850.0 * math.pow(accuracyRatio, 1.5);
-    final speedFactor = (1.0 - (evidence.timeToTapMs / config.durationMs)).clamp(0.0, 1.0);
+    final speedFactor = (1.0 - (evidence.timeToTapMs / config.durationMs))
+        .clamp(0.0, 1.0);
     final speedScore = 150.0 * speedFactor;
 
     final score = (distScore + speedScore).round().clamp(0, 1000);

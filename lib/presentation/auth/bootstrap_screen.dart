@@ -8,10 +8,7 @@ import '../../domain/auth/local_auth_repository.dart';
 class BootstrapScreen extends StatefulWidget {
   final AuthRepository? authRepository;
 
-  const BootstrapScreen({
-    super.key,
-    this.authRepository,
-  });
+  const BootstrapScreen({super.key, this.authRepository});
 
   @override
   State<BootstrapScreen> createState() => _BootstrapScreenState();

@@ -35,7 +35,9 @@ final class AppRouter {
       AppRoutes.profile,
     ].contains(settings.name);
 
-    if (isProtected && authRepository != null && !authRepository.currentState.isAuthenticated) {
+    if (isProtected &&
+        authRepository != null &&
+        !authRepository.currentState.isAuthenticated) {
       return MaterialPageRoute(
         builder: (_) => LoginScreen(authRepository: authRepository),
         settings: settings,
@@ -85,9 +87,8 @@ final class AppRouter {
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text('Route not found')),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text('Route not found'))),
           settings: settings,
         );
     }

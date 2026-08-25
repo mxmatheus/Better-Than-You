@@ -8,21 +8,22 @@ import 'daily_leaderboard_entry.dart';
 import 'daily_submission.dart';
 import 'daily_user_rank_summary.dart';
 
-final class SupabaseDailyChallengeRepository implements DailyChallengeRepository {
+final class SupabaseDailyChallengeRepository
+    implements DailyChallengeRepository {
   final SupabaseClient _client;
 
-  const SupabaseDailyChallengeRepository({
-    required SupabaseClient client,
-  }) : _client = client;
+  const SupabaseDailyChallengeRepository({required SupabaseClient client})
+    : _client = client;
 
   @override
   Future<DailyChallenge> getDailyChallenge({DateTime? date}) async {
     final utcDate = date?.toUtc() ?? DateTime.now().toUtc();
     final dateStr = _formatDate(utcDate);
 
-    final res = await _client.rpc('get_or_create_daily_challenge', params: {
-      'p_date': dateStr,
-    });
+    final res = await _client.rpc(
+      'get_or_create_daily_challenge',
+      params: {'p_date': dateStr},
+    );
 
     final seed = (res['seed'] as num).toInt();
     final schedRaw = (res['scheduled_challenges'] as List<dynamic>)
@@ -41,15 +42,18 @@ final class SupabaseDailyChallengeRepository implements DailyChallengeRepository
   Future<DailySubmission> startOrResumeDailyChallenge({DateTime? date}) async {
     final user = _client.auth.currentUser;
     if (user == null) {
-      throw StateError('User must be authenticated to start or resume daily challenge');
+      throw StateError(
+        'User must be authenticated to start or resume daily challenge',
+      );
     }
 
     final utcDate = date?.toUtc() ?? DateTime.now().toUtc();
     final dateStr = _formatDate(utcDate);
 
-    final res = await _client.rpc('start_or_resume_daily_challenge', params: {
-      'p_date': dateStr,
-    });
+    final res = await _client.rpc(
+      'start_or_resume_daily_challenge',
+      params: {'p_date': dateStr},
+    );
 
     final statusStr = res['status'] as String? ?? 'IN_PROGRESS';
     final roundScoresRaw = res['round_scores'] as List<dynamic>? ?? const [];
@@ -62,7 +66,9 @@ final class SupabaseDailyChallengeRepository implements DailyChallengeRepository
       currentRoundIndex: (res['current_round_index'] as num?)?.toInt() ?? 1,
       totalScore: (res['total_score'] as num?)?.toInt() ?? 0,
       roundScores: roundScoresRaw.map((e) => (e as num).toInt()).toList(),
-      completedAt: completedAtStr != null ? DateTime.parse(completedAtStr) : null,
+      completedAt: completedAtStr != null
+          ? DateTime.parse(completedAtStr)
+          : null,
     );
   }
 
@@ -79,12 +85,15 @@ final class SupabaseDailyChallengeRepository implements DailyChallengeRepository
 
     final dateStr = _formatDate(date.toUtc());
 
-    final res = await _client.rpc('submit_daily_round_evidence', params: {
-      'p_date': dateStr,
-      'p_round_index': roundIndex,
-      'p_evidence': evidence.toJson(),
-      'p_client_version': '1.0.0',
-    });
+    final res = await _client.rpc(
+      'submit_daily_round_evidence',
+      params: {
+        'p_date': dateStr,
+        'p_round_index': roundIndex,
+        'p_evidence': evidence.toJson(),
+        'p_client_version': '1.0.0',
+      },
+    );
 
     final authScore = (res['authoritative_score'] as num?)?.toInt() ?? 0;
     final metricText = res['formatted_metric'] as String? ?? '';
@@ -109,17 +118,19 @@ final class SupabaseDailyChallengeRepository implements DailyChallengeRepository
     final dateStr = _formatDate(utcDate);
     final user = _client.auth.currentUser;
 
-    final res = await _client.rpc('get_daily_leaderboard', params: {
-      'p_date': dateStr,
-      'p_limit': limit,
-    });
+    final res = await _client.rpc(
+      'get_daily_leaderboard',
+      params: {'p_date': dateStr, 'p_limit': limit},
+    );
 
     final list = res as List<dynamic>? ?? const [];
     return list
-        .map((e) => DailyLeaderboardEntry.fromJson(
-              e as Map<String, dynamic>,
-              currentUserId: user?.id,
-            ))
+        .map(
+          (e) => DailyLeaderboardEntry.fromJson(
+            e as Map<String, dynamic>,
+            currentUserId: user?.id,
+          ),
+        )
         .toList();
   }
 
@@ -143,9 +154,10 @@ final class SupabaseDailyChallengeRepository implements DailyChallengeRepository
     final utcDate = date?.toUtc() ?? DateTime.now().toUtc();
     final dateStr = _formatDate(utcDate);
 
-    final res = await _client.rpc('get_daily_user_rank', params: {
-      'p_date': dateStr,
-    });
+    final res = await _client.rpc(
+      'get_daily_user_rank',
+      params: {'p_date': dateStr},
+    );
 
     return DailyUserRankSummary.fromJson(
       res as Map<String, dynamic>,

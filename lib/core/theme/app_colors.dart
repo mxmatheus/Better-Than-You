@@ -12,7 +12,7 @@ abstract final class AppColors {
   static const Color primary = Color(0xFF00E676); // Emerald Win / Ready
   static const Color primaryDim = Color(0xFF00B057);
   static const Color accent = Color(0xFF00E5FF); // Cyan
-  
+
   // Competitive State Colors
   static const Color win = Color(0xFF00E676); // Vibrant Green
   static const Color loss = Color(0xFFFF1744); // Electric Crimson

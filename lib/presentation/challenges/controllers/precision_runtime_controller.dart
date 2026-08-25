@@ -5,13 +5,7 @@ import '../../../core/services/haptic_service.dart';
 import '../../../domain/challenge/challenge_config.dart';
 import '../../../domain/challenge/challenge_evidence.dart';
 
-enum PrecisionUiState {
-  preparing,
-  active,
-  hit,
-  missed,
-  timeout,
-}
+enum PrecisionUiState { preparing, active, hit, missed, timeout }
 
 class PrecisionRuntimeController extends ChangeNotifier {
   final PrecisionConfig config;
@@ -29,10 +23,7 @@ class PrecisionRuntimeController extends ChangeNotifier {
 
   Timer? _ticker;
 
-  PrecisionRuntimeController({
-    required this.config,
-    required this.onComplete,
-  });
+  PrecisionRuntimeController({required this.config, required this.onComplete});
 
   void start() {
     _state = PrecisionUiState.preparing;

@@ -37,9 +37,7 @@ abstract final class AppTheme {
           foregroundColor: AppColors.background,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,

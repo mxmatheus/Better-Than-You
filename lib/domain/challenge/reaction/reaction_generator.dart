@@ -9,9 +9,6 @@ final class ReactionGenerator implements ChallengeGenerator<ReactionConfig> {
   ReactionConfig generate(int seed, {Map<String, dynamic>? options}) {
     final prng = Mulberry32(seed);
     final waitDelayMs = prng.nextInt(1500, 4500);
-    return ReactionConfig(
-      seed: seed,
-      waitDelayMs: waitDelayMs,
-    );
+    return ReactionConfig(seed: seed, waitDelayMs: waitDelayMs);
   }
 }

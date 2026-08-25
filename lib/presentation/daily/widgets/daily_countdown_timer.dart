@@ -6,10 +6,7 @@ import '../../../core/theme/app_typography.dart';
 class DailyCountdownTimer extends StatefulWidget {
   final Duration initialDuration;
 
-  const DailyCountdownTimer({
-    super.key,
-    required this.initialDuration,
-  });
+  const DailyCountdownTimer({super.key, required this.initialDuration});
 
   @override
   State<DailyCountdownTimer> createState() => _DailyCountdownTimerState();

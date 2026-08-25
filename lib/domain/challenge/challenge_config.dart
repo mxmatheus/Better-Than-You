@@ -4,19 +4,14 @@ sealed class ChallengeConfig {
   final ChallengeType type;
   final int seed;
 
-  const ChallengeConfig({
-    required this.type,
-    required this.seed,
-  });
+  const ChallengeConfig({required this.type, required this.seed});
 }
 
 final class ReactionConfig extends ChallengeConfig {
   final int waitDelayMs;
 
-  const ReactionConfig({
-    required super.seed,
-    required this.waitDelayMs,
-  }) : super(type: ChallengeType.reaction);
+  const ReactionConfig({required super.seed, required this.waitDelayMs})
+    : super(type: ChallengeType.reaction);
 }
 
 final class MemoryConfig extends ChallengeConfig {

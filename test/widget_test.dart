@@ -6,8 +6,9 @@ import 'package:better_than_you/domain/profile/player_profile.dart';
 import 'package:better_than_you/main.dart';
 
 void main() {
-  testWidgets('App renders Home screen with brand text and ranked card',
-      (WidgetTester tester) async {
+  testWidgets('App renders Home screen with brand text and ranked card', (
+    WidgetTester tester,
+  ) async {
     final repo = LocalAuthRepository(
       initialState: const AuthAuthenticated(
         user: AuthUser(id: 'user_1', email: 'player@example.com'),

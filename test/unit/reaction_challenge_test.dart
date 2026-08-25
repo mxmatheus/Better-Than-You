@@ -90,8 +90,11 @@ void main() {
           touchDownMonoMs: 1000,
         );
         final result = scorer.score(config, evidence);
-        expect(result.normalizedScore, equals(1000),
-            reason: '$t ms should score 1000');
+        expect(
+          result.normalizedScore,
+          equals(1000),
+          reason: '$t ms should score 1000',
+        );
         expect(result.formattedMetric, equals('$t ms'));
       }
     });
@@ -108,8 +111,12 @@ void main() {
           touchDownMonoMs: 2000,
         );
         final result = scorer.score(config, evidence);
-        expect(result.normalizedScore, lessThanOrEqualTo(previousScore),
-            reason: '$t ms score (${result.normalizedScore}) must be <= previous ($previousScore)');
+        expect(
+          result.normalizedScore,
+          lessThanOrEqualTo(previousScore),
+          reason:
+              '$t ms score (${result.normalizedScore}) must be <= previous ($previousScore)',
+        );
         expect(result.normalizedScore, greaterThanOrEqualTo(0));
         previousScore = result.normalizedScore;
       }

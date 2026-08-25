@@ -86,16 +86,13 @@ class _MemoryChallengeWidgetState extends State<MemoryChallengeWidget> {
                   color: state == MemoryUiState.failed
                       ? AppColors.loss
                       : (state == MemoryUiState.inputMode
-                          ? AppColors.primary
-                          : AppColors.textPrimary),
+                            ? AppColors.primary
+                            : AppColors.textPrimary),
                   fontSize: 26,
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                subText,
-                style: AppTypography.bodyMedium,
-              ),
+              Text(subText, style: AppTypography.bodyMedium),
               const SizedBox(height: 16),
 
               // 3x3 Grid centered in a constrained square
@@ -104,56 +101,59 @@ class _MemoryChallengeWidgetState extends State<MemoryChallengeWidget> {
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: Container(
-                      constraints: const BoxConstraints(maxWidth: 340, maxHeight: 340),
-                      child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
+                      constraints: const BoxConstraints(
+                        maxWidth: 340,
+                        maxHeight: 340,
                       ),
-                      itemCount: 9,
-                      itemBuilder: (context, index) {
-                        final isIlluminated =
-                            _controller.activeTileIndex == index;
-                        final isFailed = _controller.failedTileIndex == index;
-
-                        Color tileColor = AppColors.surface;
-                        Color borderColor = AppColors.surfaceBorder;
-
-                        if (isFailed) {
-                          tileColor = AppColors.loss;
-                          borderColor = AppColors.loss;
-                        } else if (isIlluminated) {
-                          tileColor = AppColors.win;
-                          borderColor = AppColors.win;
-                        }
-
-                        return GestureDetector(
-                          onTapDown: (_) => _controller.handleTileTap(index),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 120),
-                            decoration: BoxDecoration(
-                              color: tileColor,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: borderColor,
-                                width: 2.0,
-                              ),
-                              boxShadow: isIlluminated
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColors.win.withAlpha(120),
-                                        blurRadius: 16,
-                                        spreadRadius: 2,
-                                      )
-                                    ]
-                                  : null,
+                      child: GridView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 12,
+                              crossAxisSpacing: 12,
                             ),
-                          ),
-                        );
-                      },
+                        itemCount: 9,
+                        itemBuilder: (context, index) {
+                          final isIlluminated =
+                              _controller.activeTileIndex == index;
+                          final isFailed = _controller.failedTileIndex == index;
+
+                          Color tileColor = AppColors.surface;
+                          Color borderColor = AppColors.surfaceBorder;
+
+                          if (isFailed) {
+                            tileColor = AppColors.loss;
+                            borderColor = AppColors.loss;
+                          } else if (isIlluminated) {
+                            tileColor = AppColors.win;
+                            borderColor = AppColors.win;
+                          }
+
+                          return GestureDetector(
+                            onTapDown: (_) => _controller.handleTileTap(index),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 120),
+                              decoration: BoxDecoration(
+                                color: tileColor,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: borderColor,
+                                  width: 2.0,
+                                ),
+                                boxShadow: isIlluminated
+                                    ? [
+                                        BoxShadow(
+                                          color: AppColors.win.withAlpha(120),
+                                          blurRadius: 16,
+                                          spreadRadius: 2,
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ),

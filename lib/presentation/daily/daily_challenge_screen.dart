@@ -18,10 +18,7 @@ import '../challenges/widgets/reaction_challenge_widget.dart';
 class DailyChallengeScreen extends StatefulWidget {
   final DailyChallengeRepository? repository;
 
-  const DailyChallengeScreen({
-    super.key,
-    this.repository,
-  });
+  const DailyChallengeScreen({super.key, this.repository});
 
   @override
   State<DailyChallengeScreen> createState() => _DailyChallengeScreenState();
@@ -113,9 +110,7 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: AppColors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.accent),
-        ),
+        body: Center(child: CircularProgressIndicator(color: AppColors.accent)),
       );
     }
 
@@ -139,8 +134,13 @@ class _DailyChallengeScreenState extends State<DailyChallengeScreen> {
         backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, size: 20, color: AppColors.textSecondary),
-          onPressed: () => Navigator.of(context).pushReplacementNamed(AppRoutes.home),
+          icon: const Icon(
+            Icons.close,
+            size: 20,
+            color: AppColors.textSecondary,
+          ),
+          onPressed: () =>
+              Navigator.of(context).pushReplacementNamed(AppRoutes.home),
         ),
         title: Text(
           'DAILY CHALLENGE',

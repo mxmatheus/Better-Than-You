@@ -6,10 +6,7 @@ import '../../../domain/daily/daily_leaderboard_entry.dart';
 class DailyNearbyList extends StatelessWidget {
   final List<DailyLeaderboardEntry> entries;
 
-  const DailyNearbyList({
-    super.key,
-    required this.entries,
-  });
+  const DailyNearbyList({super.key, required this.entries});
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +33,19 @@ class DailyNearbyList extends StatelessWidget {
             children: entries.map((entry) {
               final isUser = entry.isCurrentUser;
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color: isUser ? AppColors.accent.withAlpha(30) : Colors.transparent,
+                  color: isUser
+                      ? AppColors.accent.withAlpha(30)
+                      : Colors.transparent,
                   border: Border(
                     bottom: BorderSide(
-                      color: entry != entries.last ? AppColors.surfaceBorder : Colors.transparent,
+                      color: entry != entries.last
+                          ? AppColors.surfaceBorder
+                          : Colors.transparent,
                     ),
                     left: isUser
                         ? const BorderSide(color: AppColors.accent, width: 3)
@@ -55,8 +59,12 @@ class DailyNearbyList extends StatelessWidget {
                       child: Text(
                         '#${entry.rank}',
                         style: AppTypography.titleMedium.copyWith(
-                          color: isUser ? AppColors.accent : AppColors.textSecondary,
-                          fontWeight: isUser ? FontWeight.w800 : FontWeight.w500,
+                          color: isUser
+                              ? AppColors.accent
+                              : AppColors.textSecondary,
+                          fontWeight: isUser
+                              ? FontWeight.w800
+                              : FontWeight.w500,
                         ),
                       ),
                     ),
@@ -64,8 +72,12 @@ class DailyNearbyList extends StatelessWidget {
                       child: Text(
                         entry.displayName,
                         style: AppTypography.bodyLarge.copyWith(
-                          color: isUser ? AppColors.textPrimary : AppColors.textSecondary,
-                          fontWeight: isUser ? FontWeight.w700 : FontWeight.w500,
+                          color: isUser
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                          fontWeight: isUser
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -73,7 +85,9 @@ class DailyNearbyList extends StatelessWidget {
                     Text(
                       '${entry.totalScore} pts',
                       style: AppTypography.titleMedium.copyWith(
-                        color: isUser ? AppColors.accent : AppColors.textPrimary,
+                        color: isUser
+                            ? AppColors.accent
+                            : AppColors.textPrimary,
                         fontWeight: isUser ? FontWeight.w800 : FontWeight.w600,
                       ),
                     ),

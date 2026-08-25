@@ -4,13 +4,7 @@ import '../../../core/services/haptic_service.dart';
 import '../../../domain/challenge/challenge_config.dart';
 import '../../../domain/challenge/challenge_evidence.dart';
 
-enum ReactionUiState {
-  preparing,
-  waiting,
-  triggered,
-  faulted,
-  completed,
-}
+enum ReactionUiState { preparing, waiting, triggered, faulted, completed }
 
 class ReactionRuntimeController extends ChangeNotifier {
   final ReactionConfig config;
@@ -75,7 +69,8 @@ class ReactionRuntimeController extends ChangeNotifier {
   }
 
   void handleTap() {
-    if (_state == ReactionUiState.waiting || _state == ReactionUiState.preparing) {
+    if (_state == ReactionUiState.waiting ||
+        _state == ReactionUiState.preparing) {
       // Early tap / False start
       _waitTimer?.cancel();
       _prepTimer?.cancel();

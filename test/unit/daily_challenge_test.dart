@@ -38,39 +38,68 @@ void main() {
 
       // Same call returns identical sequence
       final challenge2 = await repo.getDailyChallenge(date: date);
-      expect(challenge.scheduledChallenges, equals(challenge2.scheduledChallenges));
+      expect(
+        challenge.scheduledChallenges,
+        equals(challenge2.scheduledChallenges),
+      );
     });
   });
 
   group('Daily Challenge — One Attempt & Resumption Logic', () {
-    test('Starting challenge creates in-progress submission at Round 1', () async {
-      final repo = LocalDailyChallengeRepository();
-      final sub = await repo.startOrResumeDailyChallenge(date: DateTime.utc(2026, 8, 26));
+    test(
+      'Starting challenge creates in-progress submission at Round 1',
+      () async {
+        final repo = LocalDailyChallengeRepository();
+        final sub = await repo.startOrResumeDailyChallenge(
+          date: DateTime.utc(2026, 8, 26),
+        );
 
-      expect(sub.status, equals(DailyAttemptStatus.inProgress));
-      expect(sub.currentRoundIndex, equals(1));
-      expect(sub.totalScore, equals(0));
-      expect(sub.isCompleted, isFalse);
-    });
+        expect(sub.status, equals(DailyAttemptStatus.inProgress));
+        expect(sub.currentRoundIndex, equals(1));
+        expect(sub.totalScore, equals(0));
+        expect(sub.isCompleted, isFalse);
+      },
+    );
 
-    test('Resuming in-progress submission restores round index and accumulated score', () async {
-      final repo = LocalDailyChallengeRepository();
-      final date = DateTime.utc(2026, 8, 26);
-      await repo.startOrResumeDailyChallenge(date: date);
+    test(
+      'Resuming in-progress submission restores round index and accumulated score',
+      () async {
+        final repo = LocalDailyChallengeRepository();
+        final date = DateTime.utc(2026, 8, 26);
+        await repo.startOrResumeDailyChallenge(date: date);
 
-      // Re-calling startOrResume returns same active submission
-      final resumed = await repo.startOrResumeDailyChallenge(date: date);
-      expect(resumed.currentRoundIndex, equals(1));
-      expect(resumed.status, equals(DailyAttemptStatus.inProgress));
-    });
+        // Re-calling startOrResume returns same active submission
+        final resumed = await repo.startOrResumeDailyChallenge(date: date);
+        expect(resumed.currentRoundIndex, equals(1));
+        expect(resumed.status, equals(DailyAttemptStatus.inProgress));
+      },
+    );
   });
 
   group('Global Leaderboard — Deterministic Ranking & Tie-Breaking', () {
     test('Leaderboard entries sort by score DESC, user ID ASC', () {
       final entries = [
-        const DailyLeaderboardEntry(rank: 1, userId: 'user_b', username: 'B', displayName: 'B', totalScore: 8500),
-        const DailyLeaderboardEntry(rank: 2, userId: 'user_a', username: 'A', displayName: 'A', totalScore: 9000),
-        const DailyLeaderboardEntry(rank: 3, userId: 'user_c', username: 'C', displayName: 'C', totalScore: 8500),
+        const DailyLeaderboardEntry(
+          rank: 1,
+          userId: 'user_b',
+          username: 'B',
+          displayName: 'B',
+          totalScore: 8500,
+        ),
+        const DailyLeaderboardEntry(
+          rank: 2,
+          userId: 'user_a',
+          username: 'A',
+          displayName: 'A',
+          totalScore: 9000,
+        ),
+        const DailyLeaderboardEntry(
+          rank: 3,
+          userId: 'user_c',
+          username: 'C',
+          displayName: 'C',
+          totalScore: 8500,
+        ),
       ];
 
       // Sort
@@ -85,16 +114,19 @@ void main() {
       expect(entries[2].userId, equals('user_c')); // 8500
     });
 
-    test('Percentile calculation correctly scales rank over total participants', () {
-      double computePercentile(int rank, int total) {
-        if (total <= 0) return 100.0;
-        return (rank / total) * 100.0;
-      }
+    test(
+      'Percentile calculation correctly scales rank over total participants',
+      () {
+        double computePercentile(int rank, int total) {
+          if (total <= 0) return 100.0;
+          return (rank / total) * 100.0;
+        }
 
-      expect(computePercentile(1, 100), equals(1.0));
-      expect(computePercentile(10, 100), equals(10.0));
-      expect(computePercentile(50, 100), equals(50.0));
-      expect(computePercentile(1, 1), equals(100.0));
-    });
+        expect(computePercentile(1, 100), equals(1.0));
+        expect(computePercentile(10, 100), equals(10.0));
+        expect(computePercentile(50, 100), equals(50.0));
+        expect(computePercentile(1, 1), equals(100.0));
+      },
+    );
   });
 }

@@ -8,9 +8,8 @@ class AuthController extends ChangeNotifier {
   final AuthRepository _repository;
   StreamSubscription<AppAuthState>? _subscription;
 
-  AuthController({
-    required AuthRepository repository,
-  }) : _repository = repository {
+  AuthController({required AuthRepository repository})
+    : _repository = repository {
     _subscription = _repository.authStateChanges.listen((newState) {
       notifyListeners();
     });
@@ -57,6 +56,16 @@ class AuthController extends ChangeNotifier {
     );
     notifyListeners();
     return profile;
+  }
+
+  Future<PlayerProfile> signInWithGoogle() async {
+    final profile = await _repository.signInWithGoogle();
+    notifyListeners();
+    return profile;
+  }
+
+  Future<bool> checkUsernameAvailable(String username) async {
+    return _repository.checkUsernameAvailable(username);
   }
 
   Future<void> signOut() async {

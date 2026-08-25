@@ -28,13 +28,13 @@ final class ReactionEvidence extends ChallengeEvidence {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': type.name,
-        'clientTimestampMonoMs': clientTimestampMonoMs,
-        'reactionTimeMs': reactionTimeMs,
-        'isFault': isFault,
-        'triggerRenderedMonoMs': triggerRenderedMonoMs,
-        'touchDownMonoMs': touchDownMonoMs,
-      };
+    'type': type.name,
+    'clientTimestampMonoMs': clientTimestampMonoMs,
+    'reactionTimeMs': reactionTimeMs,
+    'isFault': isFault,
+    'triggerRenderedMonoMs': triggerRenderedMonoMs,
+    'touchDownMonoMs': touchDownMonoMs,
+  };
 }
 
 final class MemoryEvidence extends ChallengeEvidence {
@@ -53,13 +53,13 @@ final class MemoryEvidence extends ChallengeEvidence {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': type.name,
-        'clientTimestampMonoMs': clientTimestampMonoMs,
-        'correctCount': correctCount,
-        'sequenceLength': sequenceLength,
-        'completionTimeMs': completionTimeMs,
-        'rawTaps': rawTaps,
-      };
+    'type': type.name,
+    'clientTimestampMonoMs': clientTimestampMonoMs,
+    'correctCount': correctCount,
+    'sequenceLength': sequenceLength,
+    'completionTimeMs': completionTimeMs,
+    'rawTaps': rawTaps,
+  };
 }
 
 final class PrecisionEvidence extends ChallengeEvidence {
@@ -78,11 +78,11 @@ final class PrecisionEvidence extends ChallengeEvidence {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': type.name,
-        'clientTimestampMonoMs': clientTimestampMonoMs,
-        'xTouch': xTouch,
-        'yTouch': yTouch,
-        'timeToTapMs': timeToTapMs,
-        'distanceError': distanceError,
-      };
+    'type': type.name,
+    'clientTimestampMonoMs': clientTimestampMonoMs,
+    'xTouch': xTouch,
+    'yTouch': yTouch,
+    'timeToTapMs': timeToTapMs,
+    'distanceError': distanceError,
+  };
 }
