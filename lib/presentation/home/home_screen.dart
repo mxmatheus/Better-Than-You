@@ -2,20 +2,29 @@ import 'package:flutter/material.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/auth/auth_repository.dart';
+import '../../domain/match/match_repository.dart';
 import '../../domain/profile/player_profile.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final MatchRepository? matchRepository;
+  final AuthRepository? authRepository;
+
+  const HomeScreen({
+    super.key,
+    this.matchRepository,
+    this.authRepository,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Initial guest profile for Phase 1A baseline
-  final PlayerProfile _profile = const PlayerProfile(
+  PlayerProfile _profile = const PlayerProfile(
     id: 'guest_001',
     username: 'CHALLENGER',
+    displayName: 'CHALLENGER',
     mmr: 1000,
     matchesPlayed: 0,
     wins: 0,
@@ -23,18 +32,33 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.authRepository != null) {
+      _loadProfile();
+    }
+  }
+
+  Future<void> _loadProfile() async {
+    final p = await widget.authRepository?.getProfile();
+    if (p != null && mounted) {
+      setState(() => _profile = p);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Top Profile & MMR Bar
               _buildTopBar(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 24),
 
               // Hero Title
               const Text(
@@ -49,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   letterSpacing: 3.0,
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 24),
 
               // Ranked Play CTA Card
               _buildRankedCard(),
