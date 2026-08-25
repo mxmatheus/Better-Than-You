@@ -6,6 +6,8 @@
 CREATE OR REPLACE FUNCTION public.imul32(a BIGINT, b BIGINT)
 RETURNS BIGINT AS $$
 DECLARE
+    ua BIGINT;
+    ub BIGINT;
     a_lo BIGINT;
     a_hi BIGINT;
     b_lo BIGINT;
@@ -13,15 +15,17 @@ DECLARE
     lo_prod BIGINT;
     mid_prod BIGINT;
 BEGIN
-    a_lo := a & 65535;
-    a_hi := (a >> 16) & 65535;
-    b_lo := b & 65535;
-    b_hi := (b >> 16) & 65535;
+    ua := a & 4294967295;
+    ub := b & 4294967295;
+    a_lo := ua & 65535;
+    a_hi := (ua >> 16) & 65535;
+    b_lo := ub & 65535;
+    b_hi := (ub >> 16) & 65535;
     
-    lo_prod := (a_lo * b_lo) & 4294967295;
-    mid_prod := (((a_hi * b_lo) + (a_lo * b_hi)) & 65535) << 16;
+    lo_prod := a_lo * b_lo;
+    mid_prod := ((a_hi * b_lo) + (a_lo * b_hi)) & 65535;
     
-    RETURN (lo_prod + mid_prod) & 4294967295;
+    RETURN ((lo_prod + (mid_prod << 16))) & 4294967295;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE STRICT;
 
@@ -30,11 +34,23 @@ CREATE OR REPLACE FUNCTION public.mulberry32_step(INOUT state BIGINT, OUT next_u
 AS $$
 DECLARE
     t BIGINT;
+    t_imul1 BIGINT;
+    t_imul2 BIGINT;
+    t_sum BIGINT;
 BEGIN
     state := (state + 1831565813) & 4294967295; -- 0x6D2B79F5
     t := state;
-    t := public.imul32(t # (t >> 15), t | 1);
-    t := (t # (t + public.imul32(t # (t >> 7), 61))) & 4294967295;
+    
+    -- t = Math.imul(t ^ (t >>> 15), t | 1)
+    t_imul1 := public.imul32((t # (t >> 15)) & 4294967295, (t | 1) & 4294967295);
+    t := t_imul1;
+    
+    -- t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    t_imul2 := public.imul32((t # (t >> 7)) & 4294967295, (t | 61) & 4294967295);
+    t_sum := (t + t_imul2) & 4294967295;
+    t := (t # t_sum) & 4294967295;
+    
+    -- return (t ^ (t >>> 14)) >>> 0
     next_u32 := (t # (t >> 14)) & 4294967295;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE STRICT;

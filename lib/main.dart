@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'core/config/supabase_config.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SupabaseConfig.initialize();
   runApp(const BetterThanYouApp());
 }
 
