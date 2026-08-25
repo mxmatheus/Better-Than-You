@@ -24,4 +24,15 @@ enum ChallengeType {
         return 'Target accuracy under pressure';
     }
   }
+
+  static ChallengeType fromString(String value) {
+    switch (value.toUpperCase()) {
+      case 'MEMORY':
+        return ChallengeType.memory;
+      case 'PRECISION':
+        return ChallengeType.precision;
+      default:
+        return ChallengeType.reaction;
+    }
+  }
 }

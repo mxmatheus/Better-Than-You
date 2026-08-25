@@ -199,13 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
           onTap: () {
-            // Daily Challenge entry hook (Phase 1F)
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Daily Challenge initialized in Phase 1F'),
-                duration: Duration(seconds: 1),
-              ),
-            );
+            Navigator.of(context).pushNamed(AppRoutes.daily);
           },
           child: const Padding(
             padding: EdgeInsets.all(20.0),
