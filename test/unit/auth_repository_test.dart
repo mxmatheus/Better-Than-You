@@ -1,10 +1,60 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:better_than_you/core/logging/auth_logger.dart';
 import 'package:better_than_you/domain/auth/auth_controller.dart';
 import 'package:better_than_you/domain/auth/auth_error.dart';
 import 'package:better_than_you/domain/auth/auth_state.dart';
 import 'package:better_than_you/domain/auth/local_auth_repository.dart';
 
 void main() {
+  group('AuthLogger Diagnostics & Security', () {
+    test('maskEmail properly masks characters without exposing identity', () {
+      expect(
+        AuthLogger.maskEmail('batuhan@example.com'),
+        equals('b*****n@example.com'),
+      );
+      expect(AuthLogger.maskEmail('alex@gmail.com'), equals('a**x@gmail.com'));
+      expect(AuthLogger.maskEmail('ab@domain.com'), equals('a*@domain.com'));
+      expect(AuthLogger.maskEmail('invalid-email'), equals('***'));
+    });
+
+    test(
+      'AuthLogger diagnostics do not throw and accept structured params',
+      () {
+        expect(
+          () => AuthLogger.registerStart(
+            email: 'user@test.com',
+            username: 'Tester',
+          ),
+          returnsNormally,
+        );
+        expect(
+          () => AuthLogger.registerFailure(
+            errorType: 'AuthException',
+            statusCode: 400,
+            code: 'user_already_exists',
+            message: 'User already registered',
+            mappedError: 'EmailAlreadyRegisteredError',
+          ),
+          returnsNormally,
+        );
+        expect(
+          () => AuthLogger.googleStart(
+            redirectTo: 'io.supabase.betterthanyou://login-callback',
+          ),
+          returnsNormally,
+        );
+        expect(
+          () => AuthLogger.googleFailure(
+            errorType: 'OAuthFailedError',
+            message: 'OAuth window cancelled',
+            mappedError: 'OAuthCancelledError',
+          ),
+          returnsNormally,
+        );
+      },
+    );
+  });
+
   group('Auth Domain — LocalAuthRepository & State Lifecycle', () {
     test('Initial state defaults to AuthUnauthenticated', () {
       final repo = LocalAuthRepository();
@@ -13,7 +63,7 @@ void main() {
     });
 
     test(
-      'Sign in with valid credentials transitions to AuthAuthenticated',
+      'Case A: Sign in with valid credentials transitions to AuthAuthenticated',
       () async {
         final repo = LocalAuthRepository();
         final profile = await repo.signIn(
@@ -32,7 +82,7 @@ void main() {
     );
 
     test(
-      'Sign in with invalid credentials throws InvalidCredentialsError',
+      'Case D & Invalid: Sign in with empty/short credentials throws InvalidCredentialsError',
       () async {
         final repo = LocalAuthRepository();
         expect(
@@ -47,7 +97,7 @@ void main() {
     );
 
     test(
-      'Sign up creates profile with provided username and displayName',
+      'Case A: Sign up with new email and username creates profile successfully',
       () async {
         final repo = LocalAuthRepository();
         final profile = await repo.signUp(
@@ -64,7 +114,7 @@ void main() {
     );
 
     test(
-      'Sign up throws UsernameAlreadyTakenError for existing username',
+      'Case C: Sign up throws UsernameAlreadyTakenError for existing username',
       () async {
         final repo = LocalAuthRepository();
         expect(
@@ -80,7 +130,7 @@ void main() {
     );
 
     test(
-      'Sign up throws EmailAlreadyRegisteredError for existing email',
+      'Case B: Sign up throws EmailAlreadyRegisteredError for existing email',
       () async {
         final repo = LocalAuthRepository();
         expect(
@@ -95,26 +145,32 @@ void main() {
       },
     );
 
-    test('Sign up throws WeakPasswordError for password < 6 chars', () async {
-      final repo = LocalAuthRepository();
-      expect(
-        () => repo.signUp(
-          email: 'newuser@example.com',
-          password: '123',
-          username: 'UniqueUser',
-          displayName: 'Unique User',
-        ),
-        throwsA(isA<WeakPasswordError>()),
-      );
-    });
+    test(
+      'Case E: Sign up throws WeakPasswordError for password < 6 chars',
+      () async {
+        final repo = LocalAuthRepository();
+        expect(
+          () => repo.signUp(
+            email: 'newuser@example.com',
+            password: '123',
+            username: 'UniqueUser',
+            displayName: 'Unique User',
+          ),
+          throwsA(isA<WeakPasswordError>()),
+        );
+      },
+    );
 
-    test('Sign in with Google establishes authenticated session', () async {
-      final repo = LocalAuthRepository();
-      final profile = await repo.signInWithGoogle();
+    test(
+      'Case A: Sign in with Google establishes authenticated session',
+      () async {
+        final repo = LocalAuthRepository();
+        final profile = await repo.signInWithGoogle();
 
-      expect(profile.username, equals('GoogleChampion'));
-      expect(repo.currentState.isAuthenticated, isTrue);
-    });
+        expect(profile.username, equals('GoogleChampion'));
+        expect(repo.currentState.isAuthenticated, isTrue);
+      },
+    );
 
     test('checkUsernameAvailable returns false for taken usernames', () async {
       final repo = LocalAuthRepository();

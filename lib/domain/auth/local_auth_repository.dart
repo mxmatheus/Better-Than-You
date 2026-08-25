@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../core/logging/auth_logger.dart';
 import '../profile/player_profile.dart';
 import 'auth_error.dart';
 import 'auth_repository.dart';
@@ -37,11 +38,27 @@ final class LocalAuthRepository implements AuthRepository {
     required String password,
   }) async {
     final trimmedEmail = email.trim();
+    AuthLogger.loginStart(email: trimmedEmail);
+
     if (trimmedEmail.isEmpty || password.isEmpty) {
-      throw const InvalidCredentialsError('Email and password cannot be empty');
+      const error = InvalidCredentialsError(
+        'Email and password cannot be empty',
+      );
+      AuthLogger.loginFailure(
+        errorType: 'InvalidCredentialsError',
+        message: error.message,
+        mappedError: 'InvalidCredentialsError',
+      );
+      throw error;
     }
     if (password.length < 6) {
-      throw const InvalidCredentialsError();
+      const error = InvalidCredentialsError();
+      AuthLogger.loginFailure(
+        errorType: 'InvalidCredentialsError',
+        message: 'Password too short',
+        mappedError: 'InvalidCredentialsError',
+      );
+      throw error;
     }
 
     final user = AuthUser(id: 'local_user_001', email: trimmedEmail);
@@ -54,6 +71,7 @@ final class LocalAuthRepository implements AuthRepository {
 
     _state = AuthAuthenticated(user: user, profile: profile);
     _controller.add(_state);
+    AuthLogger.loginSuccess(userId: user.id, username: profile.username);
     return profile;
   }
 
@@ -67,19 +85,45 @@ final class LocalAuthRepository implements AuthRepository {
     final trimmedUsername = username.trim();
     final trimmedEmail = email.trim();
 
+    AuthLogger.registerStart(email: trimmedEmail, username: trimmedUsername);
+
     if (trimmedUsername.length < 3 || trimmedUsername.length > 20) {
-      throw const UnknownAuthError(
+      const error = UnknownAuthError(
         'Username must be between 3 and 20 characters',
       );
+      AuthLogger.registerFailure(
+        errorType: 'UsernameLengthError',
+        message: error.message,
+        mappedError: 'UnknownAuthError',
+      );
+      throw error;
     }
     if (password.length < 6) {
-      throw const WeakPasswordError();
+      const error = WeakPasswordError();
+      AuthLogger.registerFailure(
+        errorType: 'WeakPasswordError',
+        message: error.message,
+        mappedError: 'WeakPasswordError',
+      );
+      throw error;
     }
     if (_takenUsernames.contains(trimmedUsername.toLowerCase())) {
-      throw const UsernameAlreadyTakenError();
+      const error = UsernameAlreadyTakenError();
+      AuthLogger.registerFailure(
+        errorType: 'UsernameAlreadyTakenError',
+        message: error.message,
+        mappedError: 'UsernameAlreadyTakenError',
+      );
+      throw error;
     }
     if (_registeredEmails.contains(trimmedEmail.toLowerCase())) {
-      throw const EmailAlreadyRegisteredError();
+      const error = EmailAlreadyRegisteredError();
+      AuthLogger.registerFailure(
+        errorType: 'EmailAlreadyRegisteredError',
+        message: error.message,
+        mappedError: 'EmailAlreadyRegisteredError',
+      );
+      throw error;
     }
 
     final user = AuthUser(
@@ -98,11 +142,15 @@ final class LocalAuthRepository implements AuthRepository {
 
     _state = AuthAuthenticated(user: user, profile: profile);
     _controller.add(_state);
+    AuthLogger.registerSuccess(userId: user.id, username: profile.username);
     return profile;
   }
 
   @override
   Future<PlayerProfile> signInWithGoogle() async {
+    AuthLogger.googleStart(
+      redirectTo: 'io.supabase.betterthanyou://login-callback',
+    );
     final user = AuthUser(
       id: 'google_user_${DateTime.now().millisecondsSinceEpoch}',
       email: 'google_player@gmail.com',
@@ -116,6 +164,7 @@ final class LocalAuthRepository implements AuthRepository {
 
     _state = AuthAuthenticated(user: user, profile: profile);
     _controller.add(_state);
+    AuthLogger.googleSuccess(userId: user.id, username: profile.username);
     return profile;
   }
 
@@ -128,15 +177,23 @@ final class LocalAuthRepository implements AuthRepository {
 
   @override
   Future<void> signOut() async {
+    AuthLogger.signOut();
     _state = const AuthUnauthenticated();
     _controller.add(_state);
   }
 
   @override
   Future<PlayerProfile?> restoreSession() async {
+    AuthLogger.sessionRestoreStart();
     if (_state is AuthAuthenticated) {
-      return (_state as AuthAuthenticated).profile;
+      final s = _state as AuthAuthenticated;
+      AuthLogger.sessionRestored(
+        userId: s.user.id,
+        username: s.profile.username,
+      );
+      return s.profile;
     }
+    AuthLogger.sessionNotFound();
     _state = const AuthUnauthenticated();
     _controller.add(_state);
     return null;
