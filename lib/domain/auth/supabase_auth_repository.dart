@@ -23,30 +23,49 @@ final class SupabaseAuthRepository implements AuthRepository {
   void _init() {
     _authSubscription = _client.auth.onAuthStateChange.listen((data) async {
       final session = data.session;
+      AuthLogger.authStateChanged(
+        event: data.event.name,
+        userId: session?.user.id,
+      );
+
       if (session != null) {
         try {
           var profile = await _fetchProfile(session.user.id);
           if (profile == null) {
-            await Future.delayed(const Duration(milliseconds: 300));
+            await Future.delayed(const Duration(milliseconds: 400));
+            profile = await _fetchProfile(session.user.id);
+          }
+          if (profile == null) {
+            await Future.delayed(const Duration(milliseconds: 600));
             profile = await _fetchProfile(session.user.id);
           }
 
-          if (profile != null) {
-            _state = AuthAuthenticated(
-              user: AuthUser(
-                id: session.user.id,
-                email: session.user.email ?? '',
-              ),
-              profile: profile,
-            );
-            AuthLogger.sessionRestored(
-              userId: session.user.id,
-              username: profile.username,
-            );
-          } else {
-            _state = const AuthUnauthenticated();
-            AuthLogger.sessionNotFound();
-          }
+          profile ??= PlayerProfile(
+            id: session.user.id,
+            username:
+                session.user.userMetadata?['username'] as String? ??
+                session.user.userMetadata?['name'] as String? ??
+                (session.user.email?.split('@').first ?? 'Challenger'),
+            displayName:
+                session.user.userMetadata?['display_name'] as String? ??
+                session.user.userMetadata?['full_name'] as String? ??
+                session.user.userMetadata?['name'] as String? ??
+                'Challenger',
+            avatarUrl: session.user.userMetadata?['avatar_url'] as String?,
+            mmr: 1000,
+          );
+
+          _state = AuthAuthenticated(
+            user: AuthUser(
+              id: session.user.id,
+              email: session.user.email ?? '',
+            ),
+            profile: profile,
+          );
+          AuthLogger.sessionRestored(
+            userId: session.user.id,
+            username: profile.username,
+          );
         } catch (e) {
           _state = const AuthUnauthenticated();
           AuthLogger.sessionNotFound();
@@ -377,6 +396,25 @@ final class SupabaseAuthRepository implements AuthRepository {
 
   @override
   Future<PlayerProfile?> getProfile() async {
+    if (_state is AuthAuthenticated) {
+      final cached = (_state as AuthAuthenticated).profile;
+      final user = _client.auth.currentUser;
+      if (user != null) {
+        try {
+          final fresh = await _fetchProfile(user.id);
+          if (fresh != null) {
+            _state = AuthAuthenticated(
+              user: (_state as AuthAuthenticated).user,
+              profile: fresh,
+            );
+            _controller.add(_state);
+            return fresh;
+          }
+        } catch (_) {}
+      }
+      return cached;
+    }
+
     final user = _client.auth.currentUser;
     if (user == null) return null;
     return _fetchProfile(user.id);

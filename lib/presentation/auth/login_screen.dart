@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../core/logging/auth_logger.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/auth/auth_error.dart';
 import '../../domain/auth/auth_repository.dart';
+import '../../domain/auth/auth_state.dart';
 import '../../domain/auth/local_auth_repository.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  StreamSubscription<AppAuthState>? _authSubscription;
   bool _isLoading = false;
   bool _isGoogleLoading = false;
   String? _errorMessage;
@@ -29,10 +33,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _authRepository = widget.authRepository ?? LocalAuthRepository();
+    _authSubscription = _authRepository.authStateChanges.listen((state) {
+      if (state is AuthAuthenticated && mounted) {
+        AuthLogger.routerTransition(destination: 'AppShell');
+        Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/logging/auth_logger.dart';
 import '../../domain/auth/auth_repository.dart';
 import '../../presentation/auth/bootstrap_screen.dart';
 import '../../presentation/auth/login_screen.dart';
@@ -26,6 +27,22 @@ final class AppRouter {
     RouteSettings settings, {
     AuthRepository? authRepository,
   }) {
+    final routeName = settings.name ?? '';
+
+    // Handle OAuth deep-link callback routes seamlessly without displaying a route-not-found error
+    final isOAuthCallback =
+        routeName.contains('login-callback') ||
+        routeName.startsWith('io.supabase.betterthanyou') ||
+        routeName.startsWith('bty');
+
+    if (isOAuthCallback) {
+      AuthLogger.deepLinkReceived(uri: routeName);
+      return MaterialPageRoute(
+        builder: (_) => BootstrapScreen(authRepository: authRepository),
+        settings: settings,
+      );
+    }
+
     // Route protection: If unauthenticated, redirect protected destinations to login
     final isProtected = [
       AppRoutes.home,

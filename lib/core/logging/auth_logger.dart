@@ -115,6 +115,15 @@ abstract final class AuthLogger {
     );
   }
 
+  // Deep Link logging
+  static void deepLinkReceived({required String uri}) {
+    final safeUri = uri.replaceAll(
+      RegExp(r'(access_token|refresh_token|code|id_token)=[^&#]+'),
+      r'$1=***',
+    );
+    log('DEEPLINK', 'received uri=$safeUri');
+  }
+
   // Session lifecycle logging
   static void sessionRestoreStart() {
     log('SESSION', 'restoreSession start');
@@ -129,6 +138,15 @@ abstract final class AuthLogger {
 
   static void sessionNotFound() {
     log('SESSION', 'no active session found (unauthenticated)');
+  }
+
+  static void authStateChanged({required String event, String? userId}) {
+    final userStr = userId != null ? ' userId=$userId' : '';
+    log('SESSION', 'auth state changed event=$event$userStr');
+  }
+
+  static void routerTransition({required String destination}) {
+    log('ROUTER', 'authenticated -> $destination');
   }
 
   static void signOut() {

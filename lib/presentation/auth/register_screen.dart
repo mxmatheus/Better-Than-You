@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../core/logging/auth_logger.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/auth/auth_error.dart';
 import '../../domain/auth/auth_repository.dart';
+import '../../domain/auth/auth_state.dart';
 import '../../domain/auth/local_auth_repository.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -28,14 +31,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isGoogleLoading = false;
   String? _errorMessage;
 
+  StreamSubscription<AppAuthState>? _authSubscription;
+
   @override
   void initState() {
     super.initState();
     _authRepository = widget.authRepository ?? LocalAuthRepository();
+    _authSubscription = _authRepository.authStateChanges.listen((state) {
+      if (state is AuthAuthenticated && mounted) {
+        AuthLogger.routerTransition(destination: 'AppShell');
+        Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _usernameController.dispose();
     _displayNameController.dispose();
     _emailController.dispose();

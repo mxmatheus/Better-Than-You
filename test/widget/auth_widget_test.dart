@@ -239,5 +239,38 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('HOME_SCREEN'), findsOneWidget);
     });
+
+    testWidgets(
+      'AppRouter handles OAuth callback deep-link route seamlessly without error',
+      (tester) async {
+        final repo = LocalAuthRepository(
+          initialState: const AuthAuthenticated(
+            user: AuthUser(id: 'user_oauth', email: 'oauth@example.com'),
+            profile: PlayerProfile(
+              id: 'user_oauth',
+              username: 'OAuthUser',
+              displayName: 'OAuth User',
+              mmr: 1000,
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.darkTheme,
+            initialRoute: '/login-callback',
+            onGenerateRoute: (settings) =>
+                AppRouter.generateRoute(settings, authRepository: repo),
+            routes: {
+              AppRoutes.home: (_) => const Scaffold(body: Text('HOME_SCREEN')),
+            },
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.text('Route not found'), findsNothing);
+        expect(find.text('HOME_SCREEN'), findsOneWidget);
+      },
+    );
   });
 }
